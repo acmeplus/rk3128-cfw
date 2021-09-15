@@ -1,0 +1,87 @@
+#!/bin/sh
+#
+# Start system from SD card
+#
+
+#
+# Display error and power off
+# Initialize the framebuffer, display an image, wait for 5 seconds,
+# and power off the system.
+#
+# The image path is automatically completed with a proper suffix
+# according to the screen resolution. Valid suffixes are:
+#   - _ps5k.png (for 960x544p).
+#   - _revAB.png (for 1024x600p).
+#   - _revCD.png (for 800x480xp).
+#   - _720p.png (for 1280x720p).
+#
+# Parameters:
+#   - image path: only the common part, suffix is added automatically
+#                 as explained above.
+the_end() {
+
+    # TODO we need splash for each console and for no rootfs
+    # TODO review execution order of S50usbdevices
+
+    image=$1
+
+    modes_files=`find /sys/ -name "modes" 2>/dev/null`
+    fb_params=`for f in $modes_files; do cat $f | grep "U:" && echo $f; done`
+    mode=`echo $fb_params | cut -d' ' -f1`
+    fb_path=`echo $fb_params | cut -d' ' -f2 | sed 's/.$//'`
+
+    case "$mode" in
+      U:960x544p-0)
+        image="${image}_ps5k.png" ;;
+      U:1024x600p-0)
+        image="${image}_revAB.png" ;;
+      U:800x480p-0)
+        image="${image}_revCD.png" ;;
+      U:1280x720p-0)
+        image="${image}_720p.png" ;;
+    esac
+
+    # First initialize the framebuffer
+    echo $mode > $fb_path
+    # Display error message
+    fbv -i $image &
+    # Wait 5 seconds before power off the system
+    sleep 5
+    poweroff
+    exit 1
+}
+
+case "$1" in
+  start)
+
+    # Make sure userdata/system points to /mnt/sdcard
+    if [ ! -d /userdata/system ];then
+      ln -s /mnt/sdcard /userdata/system
+    fi
+
+    export LC_ALL='en_US.utf8'
+    export WESTON_DRM_MIRROR=0
+    export WESTON_DRM_PREFER_EXTERNAL=1
+    export HOME=/userdata/system
+
+    # Set up SDL ASSERT workaround (disable it)
+    export SDL_ASSERT=always_ignore
+
+    # XDG_RUNTIME need to be set for wayland
+    mkdir -p /tmp/.xdg &&  chmod 0700 /tmp/.xdg
+    export XDG_RUNTIME_DIR=/tmp/.xdg
+    weston --tty=2 --idle-time=0 &
+    
+    sleep 2
+
+    retroarch -c /mnt/sdcard/configs/ruka/retroarch_ps5000.cfg &
+    ;;
+  stop)
+    printf "stop finished"
+    ;;
+  *)
+    echo "Usage: $0 {start|stop}"
+    exit 1
+    ;;
+esac
+exit 0
