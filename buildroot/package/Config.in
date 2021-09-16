@@ -11,7 +11,6 @@ menu "Target packages"
 
 menu "Audio and video applications"
 	source "package/alsa-utils/Config.in"
-	source "package/alsa-plugins/Config.in"
 	source "package/atest/Config.in"
 	source "package/aumix/Config.in"
 	source "package/bellagio/Config.in"
@@ -47,7 +46,6 @@ menu "Audio and video applications"
 	source "package/on2-8170-libs/Config.in"
 	source "package/opus-tools/Config.in"
 	source "package/pulseaudio/Config.in"
-	source "package/pulseaudio-utils/Config.in"
 	source "package/sox/Config.in"
 	source "package/squeezelite/Config.in"
 	source "package/tidsp-binaries/Config.in"
@@ -541,7 +539,6 @@ endmenu
 	source "package/wipe/Config.in"
 	source "package/xorriso/Config.in"
 	source "package/xr819-xradio/Config.in"
-	source "package/pm-utils/Config.in"
 endmenu
 
 menu "Interpreter languages and scripting"
@@ -1207,7 +1204,6 @@ menu "Hardware handling"
 	source "package/libaio/Config.in"
 	source "package/libatasmart/Config.in"
 	source "package/libcec/Config.in"
-	source "package/libenet/Config.in"
 	source "package/libfreefare/Config.in"
 	source "package/libftdi/Config.in"
 	source "package/libftdi1/Config.in"
@@ -2045,11 +2041,6 @@ menu "Text editors and viewers"
 	source "package/nano/Config.in"
 	source "package/uemacs/Config.in"
 	source "package/vim/Config.in"
-endmenu
-
-menu "Emulators, RetroArch, and Libretro cores"
-	source "package/emulators/Config.in"
-	source "package/emulationstation/Config.in"
 endmenu
 
 endmenu

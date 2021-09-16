@@ -1,8 +1,0 @@
-config BR2_PACKAGE_TSUGARU
-    bool "tsugaru"
-    help
-      FM TOWNS Emulator "Tsugaru"
-
-	    https://github.com/captainys/TOWNSEMU
-
-

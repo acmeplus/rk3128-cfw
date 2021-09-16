@@ -1,0 +1,15 @@
+default:
+  options:
+    video_threaded: true
+
+psp:
+  options:
+    frameskip: automatic
+nds:
+  emulator: drastic
+  core:     drastic
+psx:
+  emulator: libretro
+  core:     swanstation
+  options:
+    gpu_software: true
