@@ -3,13 +3,15 @@ comment "python needs a toolchain w/ wchar, threads, dynamic library"
 	depends on !BR2_USE_WCHAR || !BR2_TOOLCHAIN_HAS_THREADS || BR2_STATIC_LIBS
 
 config BR2_PACKAGE_PYTHON
-	bool "python"
+	bool "python2.7 (deprecated)"
 	depends on BR2_USE_WCHAR
 	# uses fork()
 	depends on BR2_USE_MMU
 	depends on BR2_TOOLCHAIN_HAS_THREADS # libffi
 	depends on !BR2_STATIC_LIBS
 	select BR2_PACKAGE_LIBFFI
+	# batocera - required for ds4drv / playstation4 pads
+	select BR2_PACKAGE_BLUEZ5_UTILS_HEADERS if BR2_PACKAGE_BLUEZ5_UTILS
 	help
 	  The python language interpreter.
 
@@ -38,6 +40,11 @@ endchoice
 menu "core python modules"
 
 comment "The following modules are unusual or require extra libraries"
+
+config BR2_PACKAGE_PYTHON_2TO3
+	bool "2to3 module"
+	help
+	  code translation from python 2 to 3
 
 config BR2_PACKAGE_PYTHON_BZIP2
 	bool "bzip2 module"

@@ -1,4 +1,0 @@
-menuconfig BR2_PACKAGE_RKFFPLAY
-	bool "rkffplay"
-	depends on BR2_PACKAGE_SDL2
-	depends on BR2_PACKAGE_FFMPEG

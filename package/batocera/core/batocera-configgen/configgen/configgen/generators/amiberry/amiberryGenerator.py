@@ -9,7 +9,9 @@ import zipfile
 from settings.unixSettings import UnixSettings
 from generators.libretro import libretroControllers
 from os.path import dirname
-from utils.logger import eslog
+from utils.logger import get_logger
+
+eslog = get_logger(__name__)
 
 class AmiberryGenerator(Generator):
 
@@ -19,7 +21,7 @@ class AmiberryGenerator(Generator):
             os.makedirs(dirname(batoceraFiles.amiberryRetroarchCustom))
         
         romType = self.getRomType(rom)
-        eslog.log("romType: "+romType)
+        eslog.debug("romType: "+romType)
         if romType != 'UNKNOWN' :           
             commandArray = [ batoceraFiles.batoceraBins[system.config['emulator']], "-G" ]
             if romType != 'WHDL' :
@@ -89,9 +91,21 @@ class AmiberryGenerator(Generator):
             commandArray.append("-s")
             commandArray.append("joyport2=")
 
+            # display line mode
+            commandArray.append("-s")
+            commandArray.append("gfx_linemode=double")
+
+            # remove interlace artifacts
+            commandArray.append("-s")
+            commandArray.append("gfx_flickerfixer=true")
+
             # display vertical centering
             commandArray.append("-s")
             commandArray.append("gfx_center_vertical=smart")
+
+            # fix sound buffer
+            commandArray.append("-s")
+            commandArray.append("sound_max_buff=4096")
 
             os.chdir("/usr/share/amiberry")
             return Command.Command(array=commandArray)
@@ -159,7 +173,7 @@ class AmiberryGenerator(Generator):
                         if extension == "info":
                             return 'WHDL'
                         elif extension == 'lha' :
-                            eslog.log("Amiberry doesn't support .lha inside a .zip")
+                            eslog.warning("Amiberry doesn't support .lha inside a .zip")
                             return 'UNKNOWN'
                         elif extension == 'adf' :
                             return 'DISK'

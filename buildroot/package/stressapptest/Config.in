@@ -1,6 +1,0 @@
-config BR2_PACKAGE_STRESSAPPTEST
-	bool "stress app test"
-	help
-	    stress app test
-
-

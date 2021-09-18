@@ -3,8 +3,7 @@
 # WATARA
 #
 ################################################################################
-# Version.: Commits on Jun 03, 2021
-LIBRETRO_WATARA_VERSION = 7ffa0711c84f24b217a04d2be411132f385a8076
+LIBRETRO_WATARA_VERSION = dacb12c8eb1a9adc96972969634d219eace35ff3
 LIBRETRO_WATARA_SITE = $(call github,libretro,potator,$(LIBRETRO_WATARA_VERSION))
 LIBRETRO_WATARA_LICENSE = GPLv2
 
@@ -18,11 +17,7 @@ else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI2),y)
 LIBRETRO_WATARA_PLATFORM = rpi2
 
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
-    ifeq ($(BR2_aarch64),y)
-        LIBRETRO_WATARA_PLATFORM = rpi3_64
-    else
-        LIBRETRO_WATARA_PLATFORM = rpi3
-    endif
+LIBRETRO_WATARA_PLATFORM = rpi3_64
 
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)
 LIBRETRO_WATARA_PLATFORM = rpi4

@@ -825,6 +825,17 @@ def generateCoreSettings(coreSettings, system, rom):
                 coreSettings.save('mgba_frameskip', system.config['frameskip_mgba'])
             else:
                 coreSettings.save('mgba_frameskip', '"0"')
+        # Force Super Game Boy mode for SGB system, auto for all others
+        # No current option to override - add if needed.
+        if (system.name == 'sgb'):
+            coreSettings.save('mgba_gb_model', '"Super Game Boy"')
+            # Default border to on for SGB
+            if system.isOptSet('sgb_borders') and system.config['sgb_borders'] == "OFF":
+                coreSettings.save('mgba_sgb_borders', '"OFF"')
+            else:
+                coreSettings.save('mgba_sgb_borders', '"ON"')
+        else:
+            coreSettings.save('mgba_gb_model', '"Autodetect"')
 
     if (system.config['core'] == 'vba-m'):
         # GB / GBC / GBA: Auto select fine hardware mode
@@ -887,10 +898,19 @@ def generateCoreSettings(coreSettings, system, rom):
         # Reduce Sprite Flickering
         if system.isOptSet('nestopia_nospritelimit') and system.config['nestopia_nospritelimit'] == "disabled":
             coreSettings.save('nestopia_nospritelimit', '"disabled"')
-            coreSettings.save('nestopia_overscan_h',    '"disabled"')
-            coreSettings.save('nestopia_overscan_v',    '"disabled"')
         else:
             coreSettings.save('nestopia_nospritelimit', '"enabled"')
+        # Crop Overscan
+        if system.isOptSet('nestopia_cropoverscan') and system.config['nestopia_cropoverscan'] == "none":
+            coreSettings.save('nestopia_overscan_h',    '"disabled"')
+            coreSettings.save('nestopia_overscan_v',    '"disabled"')
+        elif system.isOptSet('nestopia_cropoverscan') and system.config['nestopia_cropoverscan'] == "h":
+            coreSettings.save('nestopia_overscan_h',    '"enabled"')
+            coreSettings.save('nestopia_overscan_v',    '"disabled"')
+        elif system.isOptSet('nestopia_cropoverscan') and system.config['nestopia_cropoverscan'] == "v":
+            coreSettings.save('nestopia_overscan_h',    '"disabled"')
+            coreSettings.save('nestopia_overscan_v',    '"enabled"')
+        else:
             coreSettings.save('nestopia_overscan_h',    '"enabled"')
             coreSettings.save('nestopia_overscan_v',    '"enabled"')
         # Palette Choice
@@ -920,10 +940,19 @@ def generateCoreSettings(coreSettings, system, rom):
         # Reduce Sprite Flickering
         if system.isOptSet('fceumm_nospritelimit') and system.config['fceumm_nospritelimit'] == "disabled":
             coreSettings.save('fceumm_nospritelimit', '"disabled"')
-            coreSettings.save('fceumm_overscan_h',    '"disabled"')
-            coreSettings.save('fceumm_overscan_v',    '"disabled"')
         else:
             coreSettings.save('fceumm_nospritelimit', '"enabled"')
+        # Crop Overscan
+        if system.isOptSet('fceumm_cropoverscan') and system.config['fceumm_cropoverscan'] == "none":
+            coreSettings.save('fceumm_overscan_h',    '"disabled"')
+            coreSettings.save('fceumm_overscan_v',    '"disabled"')
+        elif system.isOptSet('fceumm_cropoverscan') and system.config['fceumm_cropoverscan'] == "h":
+            coreSettings.save('fceumm_overscan_h',    '"enabled"')
+            coreSettings.save('fceumm_overscan_v',    '"disabled"')
+        elif system.isOptSet('fceumm_cropoverscan') and system.config['fceumm_cropoverscan'] == "v":
+            coreSettings.save('fceumm_overscan_h',    '"disabled"')
+            coreSettings.save('fceumm_overscan_v',    '"enabled"')
+        else:
             coreSettings.save('fceumm_overscan_h',    '"enabled"')
             coreSettings.save('fceumm_overscan_v',    '"enabled"')
         # Palette Choice
@@ -1001,6 +1030,55 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('snes9x_2010_overclock', '"10 MHz (Default)"')
 
     # TODO: Add CORE options for BSnes and PocketSNES
+
+    # Nintendo SNES/GB/GBC/SGB
+    if (system.config['core'] == 'mesen-s'):
+        # Force appropriate Game Boy mode for the system (unless overriden)
+        if (system.name == 'sgb') and not system.isOptSet('mesen-s_gbmodel'):
+            coreSettings.save('mesen-s_gbmodel', '"Super Game Boy"')
+        elif (system.name == 'gb') and not system.isOptSet('mesen-s_gbmodel'):
+            coreSettings.save('mesen-s_gbmodel', '"Game Boy"')
+        elif (system.name == 'gbc') and not system.isOptSet('mesen-s_gbmodel'):
+            coreSettings.save('mesen-s_gbmodel', '"Game Boy Color"')
+        elif system.isOptSet('mesen-s_gbmodel'):
+            coreSettings.save('mesen-s_gbmodel', '"' + system.config['mesen-s_gbmodel'] + '"')
+        else:
+            coreSettings.save('mesen-s_gbmodel', '"Auto"')
+        # SGB2 Enable
+        if system.isOptSet('mesen-s_sgb2'):
+            coreSettings.save('mesen-s_sgb2', '"' + system.config['mesen-s_sgb2'] + '"')
+        else:
+            coreSettings.save('msesn-s_sgb2', '"enabled"')
+        # NTSC Filter
+        if system.isOptSet('mesen-s_ntsc_filter'):
+            coreSettings.save('mesen-s_ntsc_filter', '"' + system.config['mesen-s_ntsc_filter'] + '"')
+        else:
+            coreSettings.save('msesn-s_ntsc_filter', '"disabled"')
+        # Blending for high-res mode (Kirby's Dream Land 3 pseudo-transparency)
+        if system.isOptSet('mesen-s_blend_high_res'):
+            coreSettings.save('mesen-s_blend_high_res', '"' + system.config['mesen-s_blend_high_res'] + '"')
+        else:
+            coreSettings.save('msesn-s_blend_high_res', '"disabled"')
+        # Change sound interpolation to cubic
+        if system.isOptSet('mesen-s_cubic_interpolation'):
+            coreSettings.save('mesen-s_cubic_interpolation', '"' + system.config['mesen-s_cubic_interpolation'] + '"')
+        else:
+            coreSettings.save('msesn-s_cubic_interpolation', '"disabled"')
+        # SNES CPU Overclock
+        if system.isOptSet('mesen-s_overclock'):
+            coreSettings.save('mesen-s_overclock', '"' + system.config['mesen-s_overclock'] + '"')
+        else:
+            coreSettings.save('msesn-s_overclock', '"None"')
+        # Overclocking type (compatibility)
+        if system.isOptSet('mesen-s_overclock_type'):
+            coreSettings.save('mesen-s_overclock_type', '"' + system.config['mesen-s_overclock_type'] + '"')
+        else:
+            coreSettings.save('msesn-s_overclock_type', '"Before NMI"')
+        # SuperFX Overclock
+        if system.isOptSet('mesen-s_superfx_overclock'):
+            coreSettings.save('mesen-s_superfx_overclock', '"' + system.config['mesen-s_superfx_overclock'] + '"')
+        else:
+            coreSettings.save('msesn-s_superfx_overclock', '"100%"')
 
     # Nintendo Virtual Boy
     if (system.config['core'] == 'vb'):
@@ -1187,10 +1265,13 @@ def generateCoreSettings(coreSettings, system, rom):
         # Reduce sprite flickering
         if system.isOptSet('picodrive_sprlim') and system.config['picodrive_sprlim'] == 'disabled':
             coreSettings.save('picodrive_sprlim',   '"disabled"')
-            coreSettings.save('picodrive_overscan', '"disabled"')
         else:
             coreSettings.save('picodrive_sprlim',   '"enabled"')
+        # Crop Overscan: the setting in picodrive shows overscan when enabled
+        if system.isOptSet('picodrive_cropoverscan') and system.config['picodrive_cropoverscan'] == 'disabled':
             coreSettings.save('picodrive_overscan', '"enabled"')
+        else:
+            coreSettings.save('picodrive_overscan', '"disabled"')
         # 6 Button Controller 1
         if system.isOptSet('picodrive_controller1'):
             coreSettings.save('picodrive_sprlim', '"' + system.config['picodrive_controller1'] + '"')
@@ -1412,7 +1493,7 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('beetle_psx_enable_multitap_port1', '"disabled"')
             coreSettings.save('beetle_psx_enable_multitap_port2', '"disabled"')
 
-    if (system.config['core'] == 'swanstation'):
+    if (system.config['core'] == 'swanstation' or system.config['core'] == 'duckstation'):
         # renderer
         if system.isOptSet("gpu_software") and system.getOptBoolean("gpu_software") == True:
             coreSettings.save('duckstation_GPU.Renderer', "Software")
@@ -1459,16 +1540,6 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('duckstation_Display.CropMode', system.config['duckstation_CropMode'])
         else:
             coreSettings.save('duckstation_Display.CropMode', '"Overscan"')
-        # Controller 1 Type
-        if system.isOptSet('duckstation_Controller1'):
-            coreSettings.save('duckstation_Controller1.Type', system.config['duckstation_Controller1'])
-        else:
-            coreSettings.save('duckstation_Controller1.Type', '"DigitalController"')
-        # Controller 2 Type
-        if system.isOptSet('duckstation_Controller2'):
-            coreSettings.save('duckstation_Controller2.Type', system.config['duckstation_Controller2'])
-        else:
-            coreSettings.save('duckstation_Controller2.Type', '"DigitalController"')
 
     if (system.config['core'] == 'pcsx_rearmed'):
         # Display Games Hack Options

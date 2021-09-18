@@ -1,6 +1,0 @@
-config BR2_PACKAGE_SOURCE_HAN_SANS_TW
-	bool "Source Han Sans TW"
-	help
-	  Adobe OpenType Pan-CJK font family for Traditional Chinese(Tai Wan).
-
-	  https://github.com/adobe-fonts/source-han-sans

@@ -3,8 +3,8 @@
 # retroarch
 #
 ################################################################################
-# Version.: Release on Jul 26, 2021
-RETROARCH_VERSION = v1.9.7
+# Version.: Release on Sept 4, 2021
+RETROARCH_VERSION = v1.9.9
 RETROARCH_SITE = $(call github,libretro,RetroArch,$(RETROARCH_VERSION))
 RETROARCH_LICENSE = GPLv3+
 RETROARCH_DEPENDENCIES = host-pkgconf dejavu retroarch-assets flac
@@ -14,7 +14,7 @@ RETROARCH_INSTALL_STAGING = YES
 RETROARCH_CONF_OPTS = --disable-oss --enable-zlib --disable-qt --enable-threads --enable-ozone --enable-xmb --disable-discord
 RETROARCH_CONF_OPTS += --enable-flac --enable-lua --enable-networking --enable-translate --enable-rgui --disable-cdrom
 
-RETROARCH_TARGET_CFLAGS += -DEGL_NO_X11 -DMESA_EGL_NO_X11_HEADERS
+RETROARCH_TARGET_CFLAGS += -DEGL_NO_X11
 
 ifeq ($(BR2_PACKAGE_FFMPEG),y)
 	RETROARCH_CONF_OPTS += --enable-ffmpeg
@@ -36,9 +36,9 @@ else
 	endif
 endif
 
-ifeq ($(BR2_PACKAGE_LIBDRM),y)
-	RETROARCH_CONF_OPTS += --enable-kms
-endif
+#ifeq ($(BR2_PACKAGE_LIBDRM),y)
+#	RETROARCH_CONF_OPTS += --enable-kms
+#endif
 
 ifeq ($(BR2_ARM_FPU_NEON_VFPV4)$(BR2_ARM_FPU_NEON)$(BR2_ARM_FPU_NEON_FP_ARMV8),y)
     RETROARCH_CONF_OPTS += --enable-neon
@@ -133,7 +133,7 @@ define RETROARCH_CONFIGURE_CMDS
 		$(TARGET_CONFIGURE_ARGS) \
 		$(TARGET_CONFIGURE_OPTS) \
 		CFLAGS="$(TARGET_CFLAGS) $(RETROARCH_TARGET_CFLAGS)" \
-		LDFLAGS="$(TARGET_LDFLAGS) -lc -lwayland-client" \
+		LDFLAGS="$(TARGET_LDFLAGS) -lc" \
 		CROSS_COMPILE="$(HOST_DIR)/usr/bin/" \
 		./configure \
 		--prefix=/usr \

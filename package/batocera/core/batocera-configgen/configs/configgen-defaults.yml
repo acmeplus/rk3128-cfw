@@ -34,10 +34,8 @@ amstradcpc:
   emulator: libretro
   core:     cap32
 apple2:
-  emulator: linapple
-  core:     linapple
-  options:
-    videomode: default
+  emulator: gsplus
+  core:     gsplus
 atari2600:
   emulator: libretro
   core:     stella
@@ -102,7 +100,7 @@ easyrpg:
   emulator: easyrpg
   core:     easyrpg
 ecwolf:
-  emulator: libretro
+  emulator: ecwolf
   core:     ecwolf
 fbneo:
   emulator: libretro
@@ -313,6 +311,9 @@ segacd:
 sg1000:
   emulator: libretro
   core:     genesisplusgx
+sgb:
+  emulator: libretro
+  core:     mgba
 solarus:
   emulator: solarus
   core:     solarus
@@ -401,3 +402,12 @@ steam:
 supervision:
   emulator: libretro
   core:     potator
+scv:
+  emulator: libretro
+  core:     emuscv
+apple2gs:
+  emulator: gsplus
+  core:     gsplus
+uzebox:
+  emulator: libretro
+  core:     uzem

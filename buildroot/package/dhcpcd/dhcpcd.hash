@@ -1,3 +1,4 @@
-# Locally calculated from download (no sig, hash)
-sha256	6f9674dc7e27e936cc787175404a6171618675ecfb6903ab9887b1b66a87d69e	dhcpcd-6.11.5.tar.xz
-sha256 6e3cd0df9bfabe9a3d3f4c4b27cdf68a8e188714c521264b3098ea9cf0da584c  dhcpcd.c
+# sha256 from ftp://roy.marples.name/pub/dhcpcd/dhcpcd-9.4.0.tar.xz.distinfo
+sha256  41a69297f380bf15ee8f94f73154f8c2bca7157a087c0d5aca8de000ba1d4513  dhcpcd-9.4.0.tar.xz
+# Locally calculated
+sha256  9cce1077bad23544349788ec750ec6e5aee106fc437fd6b5d73c0d8510426578  LICENSE

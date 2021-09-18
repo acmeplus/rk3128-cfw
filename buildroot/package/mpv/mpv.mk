@@ -4,11 +4,10 @@
 #
 ################################################################################
 
-MPV_VERSION = master
-MPV_SITE = $(TOPDIR)/../external/mpv
-MPV_SITE_METHOD = local
+MPV_VERSION = 0.33.0
+MPV_SITE = $(call github,mpv-player,mpv,v$(MPV_VERSION))
 MPV_DEPENDENCIES = \
-	host-pkgconf ffmpeg zlib \
+	host-pkgconf ffmpeg libass zlib \
 	$(if $(BR2_PACKAGE_LIBICONV),libiconv)
 MPV_LICENSE = GPL-2.0+
 MPV_LICENSE_FILES = LICENSE.GPL
@@ -23,15 +22,10 @@ MPV_CONF_OPTS = \
 	--disable-cocoa \
 	--disable-coreaudio \
 	--disable-cuda-hwaccel \
-	--disable-libv4l2 \
 	--disable-opensles \
-	--disable-rsound \
 	--disable-rubberband \
 	--disable-uchardet \
-	--disable-vapoursynth \
-	--disable-vapoursynth-lazy \
-	--disable-vdpau \
-	--disable-mali-fbdev
+	--disable-vapoursynth
 
 # ALSA support requires pcm+mixer
 ifeq ($(BR2_PACKAGE_ALSA_LIB_MIXER)$(BR2_PACKAGE_ALSA_LIB_PCM),yy)
@@ -82,14 +76,6 @@ else
 MPV_CONF_OPTS += --disable-libarchive
 endif
 
-# libass subtitle support
-ifeq ($(BR2_PACKAGE_LIBASS),y)
-MPV_CONF_OPTS += --enable-libass
-MPV_DEPENDENCIES += libass
-else
-MPV_CONF_OPTS += --disable-libass
-endif
-
 # bluray support
 ifeq ($(BR2_PACKAGE_LIBBLURAY),y)
 MPV_CONF_OPTS += --enable-libbluray
@@ -114,20 +100,20 @@ else
 MPV_CONF_OPTS += --disable-dvdnav
 endif
 
-# libdvdread
-ifeq ($(BR2_PACKAGE_LIBDVDREAD),y)
-MPV_CONF_OPTS += --enable-dvdread
-MPV_DEPENDENCIES += libdvdread
-else
-MPV_CONF_OPTS += --disable-dvdread
-endif
-
 # libdrm
 ifeq ($(BR2_PACKAGE_LIBDRM),y)
 MPV_CONF_OPTS += --enable-drm
 MPV_DEPENDENCIES += libdrm
 else
 MPV_CONF_OPTS += --disable-drm
+endif
+
+# libvdpau
+ifeq ($(BR2_PACKAGE_LIBVDPAU),y)
+MPV_CONF_OPTS += --enable-vdpau
+MPV_DEPENDENCIES += libvdpau
+else
+MPV_CONF_OPTS += --disable-vdpau
 endif
 
 # LUA support, only for lua51/lua52/luajit
@@ -153,14 +139,6 @@ MPV_CONF_OPTS += --enable-pulse
 MPV_DEPENDENCIES += pulseaudio
 else
 MPV_CONF_OPTS += --disable-pulse
-endif
-
-# samba support
-ifeq ($(BR2_PACKAGE_SAMBA4),y)
-MPV_CONF_OPTS += --enable-libsmbclient
-MPV_DEPENDENCIES += samba4
-else
-MPV_CONF_OPTS += --disable-libsmbclient
 endif
 
 # SDL support
@@ -196,10 +174,10 @@ endif
 
 # wayland support
 ifeq ($(BR2_PACKAGE_WAYLAND),y)
-MPV_CONF_OPTS += --enable-wayland --enable-gl --enable-gl-wayland
-MPV_DEPENDENCIES += libxkbcommon wayland wayland-protocols weston
+MPV_CONF_OPTS += --enable-wayland
+MPV_DEPENDENCIES += libxkbcommon wayland wayland-protocols
 else
-MPV_CONF_OPTS += --disable-wayland --disable-gl --disable-gl-wayland
+MPV_CONF_OPTS += --disable-wayland
 endif
 
 # Base X11 support. Config.in ensures that if BR2_PACKAGE_XORG7 is
@@ -217,6 +195,10 @@ MPV_CONF_OPTS += --disable-xv
 endif
 else
 MPV_CONF_OPTS += --disable-x11
+endif
+
+ifeq ($(BR2_TOOLCHAIN_HAS_LIBATOMIC),y)
+MPV_CONF_ENV += LDFLAGS="$(TARGET_LDFLAGS) -latomic"
 endif
 
 $(eval $(waf-package))

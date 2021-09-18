@@ -5,7 +5,10 @@
 ################################################################################
 
 # When updating the version, please also update mesa3d-headers
-MESA3D_VERSION = 20.3.4
+MESA3D_VERSION = 21.0.3
+ifeq ($(BR2_PACKAGE_MESA3D_CUSTOM_VERSION),y)
+MESA3D_VERSION = $(call qstrip,$(BR2_PACKAGE_MESA3D_CUSTOM_VERSION_VALUE))
+endif
 MESA3D_SOURCE = mesa-$(MESA3D_VERSION).tar.xz
 MESA3D_SITE = https://mesa.freedesktop.org/archive
 MESA3D_LICENSE = MIT, SGI, Khronos
@@ -22,6 +25,11 @@ MESA3D_DEPENDENCIES = \
 	expat \
 	libdrm \
 	zlib
+
+# batocera enable libglvnd support
+ifeq ($(BR2_PACKAGE_LIBGLVND),y)
+MESA3D_DEPENDENCIES += libglvnd
+endif
 
 MESA3D_CONF_OPTS = \
 	-Dgallium-omx=disabled \
@@ -101,13 +109,15 @@ MESA3D_GALLIUM_DRIVERS-$(BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_V3D)      += v3d
 MESA3D_GALLIUM_DRIVERS-$(BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_VC4)      += vc4
 MESA3D_GALLIUM_DRIVERS-$(BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_VIRGL)    += virgl
 # DRI Drivers
-MESA3D_DRI_DRIVERS-$(BR2_PACKAGE_MESA3D_DRI_DRIVER_SWRAST) += swrast
 MESA3D_DRI_DRIVERS-$(BR2_PACKAGE_MESA3D_DRI_DRIVER_I915)   += i915
 MESA3D_DRI_DRIVERS-$(BR2_PACKAGE_MESA3D_DRI_DRIVER_I965)   += i965
 MESA3D_DRI_DRIVERS-$(BR2_PACKAGE_MESA3D_DRI_DRIVER_NOUVEAU) += nouveau
 MESA3D_DRI_DRIVERS-$(BR2_PACKAGE_MESA3D_DRI_DRIVER_RADEON) += r100
+#batocera
 # Vulkan Drivers
-MESA3D_VULKAN_DRIVERS-$(BR2_PACKAGE_MESA3D_VULKAN_DRIVER_INTEL)   += intel
+MESA3D_VULKAN_DRIVERS-$(BR2_PACKAGE_MESA3D_VULKAN_DRIVER_INTEL)    += intel
+MESA3D_VULKAN_DRIVERS-$(BR2_PACKAGE_MESA3D_VULKAN_DRIVER_AMD)      += amd
+MESA3D_VULKAN_DRIVERS-$(BR2_PACKAGE_MESA3D_VULKAN_DRIVER_BROADCOM) += broadcom
 
 ifeq ($(BR2_PACKAGE_MESA3D_GALLIUM_DRIVER),)
 MESA3D_CONF_OPTS += \
@@ -140,7 +150,9 @@ ifeq ($(BR2_PACKAGE_MESA3D_VULKAN_DRIVER),)
 MESA3D_CONF_OPTS += \
 	-Dvulkan-drivers=
 else
+ifeq ($(BR2_PACKAGE_MESA3D_VULKAN_DRIVER_INTEL)$(BR2_PACKAGE_MESA3D_VULKAN_DRIVER_AMD),y)
 MESA3D_DEPENDENCIES += xlib_libxshmfence
+endif
 MESA3D_CONF_OPTS += \
 	-Ddri3=enabled \
 	-Dvulkan-drivers=$(subst $(space),$(comma),$(MESA3D_VULKAN_DRIVERS-y))
@@ -148,10 +160,10 @@ endif
 
 # APIs
 
-ifeq ($(BR2_PACKAGE_MESA3D_OSMESA_CLASSIC),y)
-MESA3D_CONF_OPTS += -Dosmesa=classic
+ifeq ($(BR2_PACKAGE_MESA3D_OSMESA_GALLIUM),y)
+MESA3D_CONF_OPTS += -Dosmesa=true
 else
-MESA3D_CONF_OPTS += -Dosmesa=none
+MESA3D_CONF_OPTS += -Dosmesa=false
 endif
 
 # Always enable OpenGL:
@@ -257,6 +269,27 @@ MESA3D_CONF_OPTS += -Dzstd=enabled
 MESA3D_DEPENDENCIES += zstd
 else
 MESA3D_CONF_OPTS += -Dzstd=disabled
+endif
+
+# batocera enable libglvnd support
+ifeq ($(BR2_PACKAGE_LIBGLVND),y)
+MESA3D_CONF_OPTS += -Dglvnd=true
+endif
+
+# batocera icd.@0@.json vulkan files
+define MESA3D_VULKANJSON_X86_64
+        $(SED) s+"host_machine.cpu()"+"'x86_64'"+ $(@D)/src/intel/vulkan/meson.build $(@D)/src/amd/vulkan/meson.build
+endef
+
+define MESA3D_VULKANJSON_X86
+        $(SED) s+"host_machine.cpu()"+"'i686'"+ $(@D)/src/intel/vulkan/meson.build $(@D)/src/amd/vulkan/meson.build
+endef
+
+ifeq ($(BR2_x86_64),y)
+	MESA3D_PRE_CONFIGURE_HOOKS += MESA3D_VULKANJSON_X86_64
+endif
+ifeq ($(BR2_x86_i686),y)
+	MESA3D_PRE_CONFIGURE_HOOKS += MESA3D_VULKANJSON_X86
 endif
 
 $(eval $(meson-package))

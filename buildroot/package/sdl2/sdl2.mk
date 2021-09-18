@@ -4,11 +4,13 @@
 #
 ################################################################################
 
-SDL2_VERSION = 2.0.7
+SDL2_VERSION = 2.0.14
 SDL2_SOURCE = SDL2-$(SDL2_VERSION).tar.gz
 SDL2_SITE = http://www.libsdl.org/release
 SDL2_LICENSE = Zlib
 SDL2_LICENSE_FILES = COPYING.txt
+SDL2_CPE_ID_VENDOR = libsdl
+SDL2_CPE_ID_PRODUCT = simple_directmedia_layer
 SDL2_INSTALL_STAGING = YES
 SDL2_CONFIG_SCRIPTS = sdl2-config
 
@@ -17,16 +19,51 @@ SDL2_CONF_OPTS += \
 	--disable-arts \
 	--disable-esd \
 	--disable-dbus \
-	--disable-pulseaudio
+	--disable-pulseaudio \
+	--disable-video-wayland
+
+# We are using autotools build system for sdl2, so the sdl2-config.cmake
+# include path are not resolved like for sdl2-config script.
+# Remove sdl2-config.cmake file and avoid unsafe include path if this
+# file is used by a cmake based package.
+# https://bugzilla.libsdl.org/show_bug.cgi?id=4597
+define SDL2_REMOVE_SDL2_CONFIG_CMAKE
+	rm -rf $(STAGING_DIR)/usr/lib/cmake/SDL2
+endef
+SDL2_POST_INSTALL_STAGING_HOOKS += SDL2_REMOVE_SDL2_CONFIG_CMAKE
 
 # We must enable static build to get compilation successful.
 SDL2_CONF_OPTS += --enable-static
+
+# batocera
+# sdl2 set the rpi video output from the host name
+ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
+SDL2_CONF_OPTS += --host=arm-raspberry-linux-gnueabihf
+endif
+
+# batocera
+# Used in screen rotation (SDL and Retroarch)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
+SDL2_DEPENDENCIES += librga
+endif
 
 ifeq ($(BR2_PACKAGE_HAS_UDEV),y)
 SDL2_DEPENDENCIES += udev
 SDL2_CONF_OPTS += --enable-libudev
 else
 SDL2_CONF_OPTS += --disable-libudev
+endif
+
+ifeq ($(BR2_X86_CPU_HAS_SSE),y)
+SDL2_CONF_OPTS += --enable-sse
+else
+SDL2_CONF_OPTS += --disable-sse
+endif
+
+ifeq ($(BR2_X86_CPU_HAS_3DNOW),y)
+SDL2_CONF_OPTS += --enable-3dnow
+else
+SDL2_CONF_OPTS += --disable-3dnow
 endif
 
 ifeq ($(BR2_PACKAGE_SDL2_DIRECTFB),y)
@@ -37,7 +74,7 @@ else
 SDL2_CONF_OPTS += --disable-video-directfb
 endif
 
-ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
+ifeq ($(BR2_PACKAGE_SDL2_OPENGLES)$(BR2_PACKAGE_RPI_USERLAND),yy)
 SDL2_DEPENDENCIES += rpi-userland
 SDL2_CONF_OPTS += --enable-video-rpi
 else
@@ -101,7 +138,6 @@ endif
 
 else
 SDL2_CONF_OPTS += --disable-video-x11 --without-x
-SDL2_CONF_ENV += CFLAGS=" -DMESA_EGL_NO_X11_HEADERS "
 endif
 
 ifeq ($(BR2_PACKAGE_SDL2_OPENGL),y)
@@ -118,13 +154,6 @@ else
 SDL2_CONF_OPTS += --disable-video-opengles
 endif
 
-ifeq ($(BR2_PACKAGE_TSLIB),y)
-SDL2_DEPENDENCIES += tslib
-SDL2_CONF_OPTS += --enable-input-tslib
-else
-SDL2_CONF_OPTS += --disable-input-tslib
-endif
-
 ifeq ($(BR2_PACKAGE_ALSA_LIB),y)
 SDL2_DEPENDENCIES += alsa-lib
 SDL2_CONF_OPTS += --enable-alsa
@@ -137,13 +166,6 @@ SDL2_DEPENDENCIES += libdrm
 SDL2_CONF_OPTS += --enable-video-kmsdrm
 else
 SDL2_CONF_OPTS += --disable-video-kmsdrm
-endif
-
-ifeq ($(BR2_PACKAGE_SDL2_WAYLAND),y)
-SDL2_DEPENDENCIES += wayland
-SDL2_CONF_OPTS += --enable-video-wayland
-else
-SDL2_CONF_OPTS += --disable-video-wayland
 endif
 
 $(eval $(autotools-package))

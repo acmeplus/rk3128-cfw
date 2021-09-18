@@ -1,6 +1,0 @@
-config BR2_PACKAGE_NOTO_SANS_JP
-	bool "Noto Sans JP"
-	help
-	  Google Noto Sans CJK region-specific subset OTF font for Japanese.
-
-	  https://www.google.com/get/noto/help/cjk/

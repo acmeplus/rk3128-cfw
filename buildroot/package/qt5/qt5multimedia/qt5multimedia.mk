@@ -28,13 +28,6 @@ ifeq ($(BR2_PACKAGE_ALSA_LIB),y)
 QT5MULTIMEDIA_DEPENDENCIES += alsa-lib
 endif
 
-ifeq ($(BR2_PACKAGE_QT5WAYLAND),y)
-QT5MULTIMEDIA_CONF_OPTS += \
-	QMAKE_CXXFLAGS+=-DENABLE_WAYLAND_PLATFORM \
-	QMAKE_LFLAGS+=-lwayland-client
-QT5MULTIMEDIA_DEPENDENCIES += wayland
-endif
-
 ifeq ($(BR2_PACKAGE_QT5BASE_EXAMPLES),y)
 QT5MULTIMEDIA_LICENSE += , LGPL-2.1+ (examples/multimedia/spectrum/3rdparty/fftreal)
 QT5MULTIMEDIA_LICENSE_FILES += examples/multimedia/spectrum/3rdparty/fftreal/license.txt

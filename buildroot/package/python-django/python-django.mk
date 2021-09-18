@@ -4,12 +4,14 @@
 #
 ################################################################################
 
-PYTHON_DJANGO_VERSION = 1.10.7
+PYTHON_DJANGO_VERSION = 3.0.14
 PYTHON_DJANGO_SOURCE = Django-$(PYTHON_DJANGO_VERSION).tar.gz
 # The official Django site has an unpractical URL
-PYTHON_DJANGO_SITE = https://pypi.python.org/packages/15/b4/d4bb7313e02386bd23a60e1eb5670321313fb67289c6f36ec43bce747aff
+PYTHON_DJANGO_SITE = https://files.pythonhosted.org/packages/76/0e/5d847a77b7b42cacd01405b45e4e370124c1d8a15970865df5ab0f09f83a
 PYTHON_DJANGO_LICENSE = BSD-3-Clause
 PYTHON_DJANGO_LICENSE_FILES = LICENSE
+PYTHON_DJANGO_CPE_ID_VENDOR = djangoproject
+PYTHON_DJANGO_CPE_ID_PRODUCT = django
 PYTHON_DJANGO_SETUP_TYPE = setuptools
 
 $(eval $(python-package))

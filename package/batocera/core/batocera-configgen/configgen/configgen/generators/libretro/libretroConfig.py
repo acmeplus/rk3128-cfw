@@ -7,10 +7,11 @@ from Emulator import Emulator
 import settings
 from settings.unixSettings import UnixSettings
 import json
-from utils.logger import eslog
+from utils.logger import get_logger
 from PIL import Image, ImageOps
 import utils.bezels as bezelsUtil
 
+eslog = get_logger(__name__)
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
@@ -28,7 +29,7 @@ ratioIndexes = ["4/3", "16/9", "16/10", "16/15", "21/9", "1/1", "2/1", "3/2", "3
 systemToBluemsx = {'msx': '"MSX2"', 'msx1': '"MSX2"', 'msx2': '"MSX2"', 'colecovision': '"COL - ColecoVision"' };
 
 # Define systems compatible with retroachievements
-systemToRetroachievements = {'atari2600', 'atari7800', 'atarijaguar', 'colecovision', 'nes', 'snes', 'virtualboy', 'n64', 'sg1000', 'mastersystem', 'megadrive', 'segacd', 'sega32x', 'saturn', 'pcengine', 'pcenginecd', 'supergrafx', 'psx', 'mame', 'fbneo', 'neogeo', 'lightgun', 'apple2', 'lynx', 'wswan', 'wswanc', 'gb', 'gbc', 'gba', 'nds', 'pokemini', 'gamegear', 'ngp', 'ngpc', 'supervision'};
+systemToRetroachievements = {'atari2600', 'atari7800', 'jaguar', 'colecovision', 'nes', 'snes', 'virtualboy', 'n64', 'sg1000', 'mastersystem', 'megadrive', 'segacd', 'sega32x', 'saturn', 'pcengine', 'pcenginecd', 'supergrafx', 'psx', 'mame', 'fbneo', 'neogeo', 'lightgun', 'apple2', 'lynx', 'wswan', 'wswanc', 'gb', 'gbc', 'gba', 'nds', 'pokemini', 'gamegear', 'ngp', 'ngpc', 'supervision', 'sufami', 'pc88', 'pcfx', '3do', 'intellivision', 'odyssey2', 'vectrex', 'wonderswan'};
 
 # Define systems NOT compatible with rewind option
 systemNoRewind = {'sega32x', 'psx', 'zxspectrum', 'n64', 'dreamcast', 'atomiswave', 'naomi', 'saturn'};
@@ -85,8 +86,14 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     retroarchConfig['quit_press_twice'] = 'false'               # not aligned behavior on other emus
     retroarchConfig['menu_show_restart_retroarch'] = 'false'    # this option messes everything up on Batocera if ever clicked
     retroarchConfig['video_driver'] = '"gl"'                    # needed for the ozone menu
+    retroarchConfig['audio_latency'] = '64'                     #best balance with audio perf
+    if (system.isOptSet("audio_latency")):
+        retroarchConfig['audio_latency'] = system.config['audio_latency']
 
-    if system.isOptSet("display.rotate"):
+    with open("/usr/share/batocera/batocera.arch") as fb:
+        arch = fb.readline().strip()
+
+    if (system.isOptSet("display.rotate") and arch not in [ 'x86_64', 'x86']):
         # 0 => 0 ; 1 => 270; 2 => 180 ; 3 => 90
         if system.config["display.rotate"] == "0":
             retroarchConfig['video_rotation'] = "0"
@@ -136,6 +143,11 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     retroarchConfig['input_libretro_device_p1'] = '1'           # Default devices choices
     retroarchConfig['input_libretro_device_p2'] = '1'
 
+    # D-pad = Left analog stick forcing on PUAE and VICE (New D2A system on RA doesn't work with these cores.)
+    if system.config['core'] == 'puae' or system.config['core'] == 'vice_x64':
+        retroarchConfig['input_player1_analog_dpad_mode'] = '3'
+        retroarchConfig['input_player2_analog_dpad_mode'] = '3'
+
     # force notification messages
     retroarchConfig['video_font_enable'] = '"true"'
 
@@ -145,9 +157,19 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     if(system.config['core'] in coreToP2Device):
         retroarchConfig['input_libretro_device_p2'] = coreToP2Device[system.config['core']]
 
-    ## AMICA CD32
-    if system.config['core'] == 'puae' and system.name == 'amigacd32':
-        retroarchConfig['input_libretro_device_p1'] = '517'     # CD 32 Pad
+    ## AMIGA OCS-ECS/AGA/CD32
+    if system.config['core'] == 'puae':
+        if system.name != 'amigacd32':
+            if system.isOptSet('controller1_puae'):
+                retroarchConfig['input_libretro_device_p1'] = system.config['controller1_puae']
+            else:
+                retroarchConfig['input_libretro_device_p1'] = '1'
+            if system.isOptSet('controller2_puae'):
+                retroarchConfig['input_libretro_device_p2'] = system.config['controller2_puae']
+            else:
+                retroarchConfig['input_libretro_device_p2'] = '1'
+        else:          
+            retroarchConfig['input_libretro_device_p1'] = '517'     # CD 32 Pad
 
     ## BlueMSX choices by System
     if(system.name in systemToBluemsx):
@@ -219,6 +241,16 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
 
     ## Sega Dreamcast controller
     if system.config['core'] == 'flycast':
+        if system.name != 'dreamcast':
+            retroarchConfig['input_player1_analog_dpad_mode'] = '3'
+            retroarchConfig['input_player2_analog_dpad_mode'] = '3'
+            retroarchConfig['input_player3_analog_dpad_mode'] = '3'
+            retroarchConfig['input_player4_analog_dpad_mode'] = '3'
+        else:
+            retroarchConfig['input_player1_analog_dpad_mode'] = '1'
+            retroarchConfig['input_player2_analog_dpad_mode'] = '1'
+            retroarchConfig['input_player3_analog_dpad_mode'] = '1'
+            retroarchConfig['input_player4_analog_dpad_mode'] = '1'
         if system.isOptSet('controller1_dc'):
             retroarchConfig['input_libretro_device_p1'] = system.config['controller1_dc']
         else:
@@ -269,12 +301,66 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     if (system.config['core'] == 'dosbox_pure'):               # Dosbox-Pure
         if system.isOptSet('controller1_dosbox_pure'):
             retroarchConfig['input_libretro_device_p1'] = system.config['controller1_dosbox_pure']
-        else:
-            retroarchConfig['input_libretro_device_p1'] = '1'
+            if system.config['controller1_dosbox_pure'] != '3':
+                retroarchConfig['input_player1_analog_dpad_mode'] = '0'
+            else:
+                retroarchConfig['input_player1_analog_dpad_mode'] = '3'
         if system.isOptSet('controller2_dosbox_pure'):
             retroarchConfig['input_libretro_device_p2'] = system.config['controller2_dosbox_pure']
+            if system.config['controller2_dosbox_pure'] != '3':
+                retroarchConfig['input_player2_analog_dpad_mode'] = '0'
+            else:
+                retroarchConfig['input_player2_analog_dpad_mode'] = '3'
+
+    ## PS1 Swanstation and Duckstation
+    if (system.config['core'] == 'swanstation'):               # Swanstation
+        # Controller 1 Type
+        if system.isOptSet('duckstation_Controller1'):
+            coreSettings.save('duckstation_Controller1.Type', system.config['duckstation_Controller1'])
         else:
-            retroarchConfig['input_libretro_device_p2'] = '1'
+            coreSettings.save('duckstation_Controller1.Type', '"DigitalController"')
+        # Controller 2 Type
+        if system.isOptSet('duckstation_Controller2'):
+            coreSettings.save('duckstation_Controller2.Type', system.config['duckstation_Controller2'])
+        else:
+            coreSettings.save('duckstation_Controller2.Type', '"DigitalController"')
+    if (system.config['core'] == 'duckstation'):               # Duckstation
+        if system.isOptSet('duckstation_Controller1'):
+            retroarchConfig['input_libretro_device_p1'] = system.config['duckstation_Controller1']
+            if system.config['duckstation_Controller1'] != '1':
+                retroarchConfig['input_player1_analog_dpad_mode'] = '0'
+            else:
+                retroarchConfig['input_player1_analog_dpad_mode'] = '3'
+        if system.isOptSet('duckstation_Controller2'):
+            retroarchConfig['input_libretro_device_p2'] = system.config['duckstation_Controller2']
+            if system.config['duckstation_Controller2'] != '1':
+                retroarchConfig['input_player2_analog_dpad_mode'] = '0'
+            else:
+                retroarchConfig['input_player2_analog_dpad_mode'] = '3'
+
+
+    ## PORTS
+    ## Quake
+    if (system.config['core'] == 'tyrquake'):
+        if system.isOptSet('tyrquake_controller1'):
+            retroarchConfig['input_libretro_device_p1'] = system.config['tyrquake_controller1']
+            if system.config['tyrquake_controller1'] == '773' or system.config['tyrquake_controller1'] == '3':
+                retroarchConfig['input_player1_analog_dpad_mode'] = '0'
+            else:
+                retroarchConfig['input_player1_analog_dpad_mode'] = '1'
+        else:
+            retroarchConfig['input_libretro_device_p1'] = '1'
+
+    ## DOOM
+    if (system.config['core'] == 'prboom'):
+        if system.isOptSet('prboom_controller1'):
+            retroarchConfig['input_libretro_device_p1'] = system.config['prboom_controller1']
+            if system.config['prboom_controller1'] != '1' or system.config['prboom_controller1'] == '3':
+                retroarchConfig['input_player1_analog_dpad_mode'] = '0'
+            else:
+                retroarchConfig['input_player1_analog_dpad_mode'] = '1'
+        else:
+            retroarchConfig['input_libretro_device_p1'] = '1'
 
     # Smooth option
     if system.isOptSet('smooth') and system.getOptBoolean('smooth') == True:
@@ -311,7 +397,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     else:
         retroarchConfig['rewind_enable'] = 'false'
 
-    # Retroachievement option
+    # Run-ahead option (latency reduction)
     retroarchConfig['run_ahead_enabled'] = 'false'
     retroarchConfig['run_ahead_frames'] = '0'
     retroarchConfig['run_ahead_secondary_instance'] = 'false'
@@ -322,6 +408,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
           if system.isOptSet('secondinstance') and system.getOptBoolean('secondinstance') == True:
               retroarchConfig['run_ahead_secondary_instance'] = 'true'
 
+    # Retroachievement option
     if system.isOptSet("retroachievements.sound") and system.config["retroachievements.sound"] != "none":
         retroarchConfig['cheevos_unlock_sound_enable'] = 'true'
         retroarchConfig['cheevos_unlock_sound'] = system.config["retroachievements.sound"]
@@ -631,7 +718,7 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution, be
             if create_new_bezel_file is True:
                 # Padding left and right borders for ultrawide screens (larger than 16:9 aspect ratio)
                 # or up/down for 4K
-                eslog.log("Generating a new adapted bezel file {}".format(output_png_file))
+                eslog.debug("Generating a new adapted bezel file {}".format(output_png_file))
                 fillcolor = 'black'
 
                 borderw = 0
@@ -665,7 +752,7 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution, be
         retroarchConfig['video_message_pos_x']    = infos["messagex"]
         retroarchConfig['video_message_pos_y']    = infos["messagey"]
 
-    eslog.log("Bezel file set to {}".format(overlay_png_file))
+    eslog.debug("Bezel file set to {}".format(overlay_png_file))
     writeBezelCfgConfig(overlay_cfg_file, overlay_png_file)
 
 def isLowResolution(gameResolution):

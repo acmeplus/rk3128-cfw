@@ -12,6 +12,10 @@ snes:
       snes9x:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X] }
       bsnes:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES] }
       bsnes_hd:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES_HD] }
+  comment_en: |
+    For more info: https://wiki.batocera.org/systems:snes
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:snes
 
 snes-msu1:
   name:       Super Disc System (MSU1)
@@ -106,6 +110,10 @@ amiga500:
       A500+:  { requireAnyOf: [BR2_PACKAGE_AMIBERRY], incompatible_extensions: [m3u] }
     libretro:
       puae:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE] }
+  comment_en: |
+    For more info: https://wiki.batocera.org/systems:amiga500
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:amiga500
 
 amiga1200:
   name:       Amiga AGA
@@ -124,6 +132,10 @@ amiga1200:
       A4000:  { requireAnyOf: [BR2_PACKAGE_AMIBERRY], incompatible_extensions: [m3u] }
     libretro:
       puae:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE] }
+  comment_en: |
+    For more info: https://wiki.batocera.org/systems:amiga500
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:snes
 
 amigacd32:
   name:       Amiga CD32
@@ -144,7 +156,7 @@ amigacdtv:
   manufacturer: Commodore
   release: 1991
   hardware: console
-  extensions: [bin, cue, iso, chd]
+  extensions: [bin, cue, iso, chd, m3u]
   emulators:
     fsuae:
       CDTV:   { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
@@ -162,6 +174,10 @@ nes:
     libretro:
       fceumm:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FCEUMM] }
       nestopia: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NESTOPIA] }
+  comment_en: |
+    For more info: https://wiki.batocera.org/systems:nes
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:nes
 
 n64:
   name:       Nintendo 64
@@ -174,10 +190,14 @@ n64:
       gliden64:   { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_GLIDEN64] }
       glide64mk2: { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_VIDEO_GLIDE64MK2]  }
       rice:       { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_VIDEO_RICE]        }
-      n64:        { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_GLES2]             }
     libretro:
       mupen64plus-next: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT] }
       parallel_n64:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PARALLEL_N64] }
+  comment_en: |
+    If Mupen64Plus standalone cannot load your zipped ROMs (black screen, then return to menu), try unzipping your ROMs.
+    For more info: https://wiki.batocera.org/systems:n64
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:n64
 
 n64dd:
   name:       Nintendo 64 Disk Drive
@@ -190,7 +210,6 @@ n64dd:
       gliden64:   { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_GLIDEN64] }
       glide64mk2: { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_VIDEO_GLIDE64MK2]  }
       rice:       { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_VIDEO_RICE]        }
-      n64:        { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_GLES2]             }
     libretro:
       mupen64plus-next: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT] }
       parallel_n64:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PARALLEL_N64] }
@@ -206,6 +225,10 @@ gba:
       mgba:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MGBA] }
       vba-m:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VBA_M] }
       gpsp:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GPSP] }
+  comment_en: |
+    For more info: https://wiki.batocera.org/systems:gba
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:gba
 
 gbc:
   name:       Game Boy Color
@@ -218,6 +241,11 @@ gbc:
       gambatte: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GAMBATTE] }
       mgba:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MGBA] }
       vba-m:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VBA_M] }
+      mesens:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESENS] }
+  comment_en: |
+    For more info: https://wiki.batocera.org/systems:gbc
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:gbc
 
 gb:
   name:       Game Boy
@@ -230,28 +258,53 @@ gb:
       gambatte: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GAMBATTE] }
       mgba:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MGBA] }
       vba-m:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VBA_M] }
+      mesens:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESENS] }
+  comment_en: |
+    For more info: https://wiki.batocera.org/systems:gb
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:gb
+
+sgb:
+  name:       Super Game Boy
+  manufacturer: Nintendo
+  release: 1994
+  hardware: console
+  extensions: [gb, gbc, zip, 7z]
+  group:      snes
+  emulators:
+    libretro:
+      mgba:          { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MGBA] }
+      mesen-s:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESENS] }
 
 gbc2players:
   name:       Game Boy Color (2 players)
   manufacturer: Nintendo
   release: 1998
   hardware: portable
-  extensions: [gbc, zip, 7z]
+  extensions: [gbc, gb2, zip, 7z]
   platform:   gbc
   emulators:
     libretro:
       tgbdual:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_TGBDUAL] }
+  comment_en: |
+    For more info: https://wiki.batocera.org/systems:gbc2players
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:gbc2players
 
 gb2players:
   name:       Game Boy (2 players)
   manufacturer: Nintendo
   release: 1989
   hardware: portable
-  extensions: [gb, zip, 7z]
+  extensions: [gb, gb2, zip, 7z]
   platform:   gb
   emulators:
     libretro:
       tgbdual:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_TGBDUAL] }
+  comment_en: |
+    For more info: https://wiki.batocera.org/systems:gb2players
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:gb2players
 
 nds:
   name:       Nintendo DS
@@ -313,6 +366,10 @@ dreamcast:
       flycast:        { requireAnyOf: [BR2_PACKAGE_FLYCAST]          }
     redream:
       redream:        { requireAnyOf: [BR2_PACKAGE_REDREAM]          }
+  comment_en: |
+    For more info: https://wiki.batocera.org/systems:dreamcast
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:dreamcast
 
 naomi:
   name:       Sega Naomi
@@ -354,6 +411,10 @@ megadrive:
       genesisplusgx-wide: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX_WIDE] }
       picodrive:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE] }
       blastem:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLASTEM] }
+  comment_en: |
+    For more info: https://wiki.batocera.org/systems:megadrive
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:megadrive
 
 segacd:
   name:       Sega CD
@@ -421,6 +482,10 @@ psp:
       ppsspp: { requireAnyOf: [BR2_PACKAGE_PPSSPP]  }
     libretro:
       ppsspp:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PPSSPP] }
+  comment_en: |
+    For more info: https://wiki.batocera.org/systems:psp
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:psp
 
 psx:
   name:       Sony Playstation 1
@@ -432,9 +497,14 @@ psx:
     libretro:
       pcsx_rearmed: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PCSX] }
       swanstation:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SWANSTATION] }
+      duckstation:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DUCKSTATION] }
       mednafen_psx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PSX] }
     duckstation:
       duckstation: { requireAnyOf: [BR2_PACKAGE_DUCKSTATION]  }
+  comment_en: |
+    For more info: https://wiki.batocera.org/systems:psx
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:psx
 
 pcengine:
   name:       PC Engine
@@ -499,7 +569,7 @@ scummvm:
     Short game names can be found at http://scummvm.org/compatibility/
     For example, for "Broken Sword" create the file "Broken Sword/sword1.scummvm"
 
-    Find the documentation here: https://wiki.batocera.org/emulators:scummvm
+    For more info: https://wiki.batocera.org/systems:scummvm
   comment_fr: |
     Placez les dossiers de jeux scummvm dans ce dossier.
 
@@ -508,7 +578,7 @@ scummvm:
     Vous trouverez les noms courts a l'adresse : http://scummvm.org/compatibility/
     Par exemple pour "Les Chevaliers de Baphomet" creez le fichier "Les Chevaliers de Baphomet/sword1.scummvm"
 
-    Trouvez la documentation ici: https://wiki.batocera.org/emulators:scummvm
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:scummvm
 
 dos:
   name:       Dos (x86)
@@ -546,7 +616,7 @@ dos:
     Games files are available on myabandonware:
     http://www.myabandonware.com/browse/platform/dos/
 
-    You can find the dos documentation for Batocera there : https://wiki.batocera.org/emulators:dos
+    For more info: https://wiki.batocera.org/systems:dos
   comment_fr: |
     Chaque jeu (fichiers) doit être contenu dans un dossier ayant l'extension ".pc .dos".
     Dans chaque dossier, un fichier dosbox.bat doit comporter la ligne de commande pour lancer le jeu.
@@ -566,7 +636,7 @@ dos:
     Les jeux DOS sont disponibles sur myabandonware:
     http://www.myabandonware.com/browse/platform/dos/
 
-    La doc dos pour Batocera se trouve à cet endroit : https://wiki.batocera.org/emulators:dos
+    La doc dos pour Batocera se trouve à cet endroit : https://wiki.batocera.org/systems:dos
 
 devilutionx:
   name:       DevilutionX
@@ -603,7 +673,7 @@ fbneo:
 
     The file FinalBurn Neo (ClrMame Pro XML, Arcade only).dat in bios/FBNeo may be used to check ROMs with clrmamepro available at http://mamedev.emulab.it/clrmamepro/
 
-    You can find the arcade documentation there: https://wiki.batocera.org/arcade
+    For more info: https://wiki.batocera.org/arcade
   comment_fr: |
     Les ROMs doivent provenir du romset 1.0.0.0
 
@@ -637,7 +707,7 @@ mame:
     Special files for mame2003 core:
     - Add your samples files in /userdata/bios/mame2003/samples/
 
-    You can find the arcade documentation there: https://wiki.batocera.org/arcade
+    For more info: https://wiki.batocera.org/arcade
   comment_fr: |
     Le système utilise le core libretro mame2003+ par défaut: Les ROMs compatibles doivent provenir du set 0.78+
     D'autres cores mame sont également inclus:
@@ -855,8 +925,12 @@ tyrquake:
       tyrquake: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_TYRQUAKE] }
   comment_en: |
     Put your Quake 1 .PAK games in this directory.
+
+    For more info: https://wiki.batocera.org/systems:tyrquake
   comment_fr: |
     Placez ici vos fichiers .PAK pour Quake 1.
+
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:tyrquake
 
 mrboom:
   name:       MrBoom
@@ -868,6 +942,10 @@ mrboom:
   emulators:
     libretro:
       mrboom: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MRBOOM] }
+  comment_en: |
+    For more info: https://wiki.batocera.org/systems:mrboom
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:mrboom
 
 tic80:
   name:       TIC-80
@@ -879,9 +957,9 @@ tic80:
     libretro:
       tic80: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_TIC80] }
   comment_en: |
-    Find the documentation here: https://wiki.batocera.org/emulators:tic-80
+    For more info: https://wiki.batocera.org/systems:tic-80
   comment_fr: |
-    Trouvez la documentation ici: https://wiki.batocera.org/emulators:tic-80
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:tic-80
 
 pico8:
   name:       Pico-8
@@ -893,9 +971,9 @@ pico8:
     libretro:
       retro8: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_RETRO8] }
   comment_en: |
-    Find the documentation here: https://wiki.batocera.org/emulators:pico-8
+    For more info: https://wiki.batocera.org/systems:pico-8
   comment_fr: |
-    Trouvez la documentation ici: https://wiki.batocera.org/emulators:pico-8
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:pico-8
 
 channelf:
   name:       Channel-F
@@ -919,8 +997,12 @@ cannonball:
       cannonball: { requireAnyOf: [BR2_PACKAGE_CANNONBALL] }
   comment_en: |
     Add mame 'OutRun rev. B' ROMs (epr-10187.88, epr-10327a.76.. ) in this directory and rename Cannonball.cannonball.disabled to Cannonball.cannonball.
+
+    For more info: https://wiki.batocera.org/systems:cannonball
   comment_fr: |
     Ajoutez les roms mame de 'OutRun rev. B' (epr-10187.88, epr-10327a.76.. ) dans ce dossier et renommez Cannonball.cannonball.disabled en Cannonball.cannonball.
+
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:cannonball
 
 sdlpop:
   name:       SdlPop
@@ -1335,9 +1417,9 @@ moonlight:
     moonlight:
       moonlight: { requireAnyOf: [BR2_PACKAGE_MOONLIGHT_EMBEDDED] }
   comment_en: |
-    Find the documentation here: https://wiki.batocera.org/emulators:moonlight
+    For more info: https://wiki.batocera.org/systems:moonlight
   comment_fr: |
-    Trouvez la documentation ici: https://wiki.batocera.org/emulators:moonlight
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:moonlight
 
 apple2:
   name:       Apple II
@@ -1346,6 +1428,8 @@ apple2:
   hardware: computer
   extensions: [nib, do, po, dsk]
   emulators:
+    gsplus:
+      gsplus: { requireAnyOf: [BR2_PACKAGE_GSPLUS] }
     linapple:
       linapple: { requireAnyOf: [BR2_PACKAGE_LINAPPLE] }
 
@@ -1385,6 +1469,10 @@ gamecube:
       dolphin:  { requireAnyOf: [BR2_PACKAGE_DOLPHIN_EMU]       }
     libretro:
       dolphin: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOLPHIN] }
+  comment_en: |
+    For more info: https://wiki.batocera.org/systems:gamecube
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:gamecube
 
 wii:
   name:       Nintendo Wii
@@ -1404,7 +1492,7 @@ wii:
         for example, to play mario galaxy, rename it mario_galaxy.ni.iso (got get the nunchuk on the first axis and infrared on the 2nd one (ni))
     To use custom textures, put them in /userdata/saves/dolphin-emu/Load/Textures/<game id>.
 
-    Find the documentation here: https://wiki.batocera.org/emulators:wii
+    For more info: https://wiki.batocera.org/systems:wii
   comment_fr: |
     Pour utiliser une wiimote virtuelle en mode horizontal, il faut rajouter ".side." dans le nom du fichier (par exemple ".side.iso").
     Vous pouvez également choisir quels axes contrôler parmi i(nfra rouge), s(wing), t(ilt) ou n(unchuk) :
@@ -1412,7 +1500,7 @@ wii:
         par exemple, pour jouer à mario galaxy, renommer le jeu en mario_galaxy.ni.iso (vous aurez le nunchuk sur le 1er axe et l'infrarouge sur le 2e (ni))
     Mettez les textures personnalisées dans /userdata/saves/dolphin-emu/Load/Textures/<game id>.
 
-    Trouvez la documentation ici: https://wiki.batocera.org/emulators:wii
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:wii
 
 ps2:
   name:       Sony Playstation 2
@@ -1423,10 +1511,15 @@ ps2:
   emulators:
     pcsx2:
       pcsx2: { requireAnyOf: [BR2_PACKAGE_PCSX2, BR2_PACKAGE_PCSX2_AVX2, BR2_PACKAGE_PCSX2_X86] }
+    libretro:
+      pcsx2: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PCSX2] }
+      play: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PLAY] }
+    play:
+      play: { requireAnyOf: [BR2_PACKAGE_PLAY] }
   comment_en: |
-    Find the documentation here: https://wiki.batocera.org/emulators:playstation_2
+    For more info: https://wiki.batocera.org/systems:playstation_2
   comment_fr: |
-    Trouvez la documentation ici: https://wiki.batocera.org/emulators:playstation_2
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:playstation_2
 
 ps3:
   name:       Sony Playstation 3
@@ -1443,13 +1536,13 @@ ps3:
     PSN digital games are installed in rpcs3-config, create a text file ending with .psn that contains the game's ID.
     First time you load a game, it takes time (a progress bar is visible). It doesn't happen next times.
 
-    Find the documentation here : https://wiki.batocera.org/emulators:playstation_3
+    For more info: https://wiki.batocera.org/systems:playstation_3
   comment_fr: |
     Vous devez préalablement charger le firmware en lançant rpcs3-config depuis menu>f1>Applications puis File>Install firmware.
     Les roms ps3 sont des dossiers ; ils doivent être renommés pour terminer par .ps3
     La première fois que vous chargez un jeu, cela met du temps (une barre de progression est visible). Cela ne se produit pas les fois suivantes.
 
-    Trouvez la documentation ici : https://wiki.batocera.org/emulators:playstation_3
+    Trouvez la documentation ici : https://wiki.batocera.org/systems:playstation_3
 
 3do:
   name:       3DO Interactive Multiplayer
@@ -1515,6 +1608,10 @@ openbor:
       openbor6330: { requireAnyOf: [BR2_PACKAGE_OPENBOR6330] }
       openbor6412: { requireAnyOf: [BR2_PACKAGE_OPENBOR6412] }
       openbor6510: { requireAnyOf: [BR2_PACKAGE_OPENBOR6510] }
+  comment_en: |
+    For more info: https://wiki.batocera.org/systems:openbor
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:openbor
 
 satellaview:
   name:       Satellaview
@@ -1526,6 +1623,7 @@ satellaview:
   emulators:
     libretro:
       snes9x: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X] }
+      mesens: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESENS] }
 
 sufami:
   name:       SuFami Turbo
@@ -1568,6 +1666,10 @@ daphne:
   emulators:
     daphne:
       hypseus:  { requireAnyOf: [BR2_PACKAGE_DAPHNE]          }
+  comment_en: |
+    For more info: https://wiki.batocera.org/systems:daphne
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:daphne
 
 thomson:
   name:       Thomson - MO/TO (Theodore)
@@ -1654,9 +1756,9 @@ windows:
       lutris:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
       proton:  { requireAnyOf: [BR2_PACKAGE_WINE_PROTON] }
   comment_en: |
-    Find the documentation here: https://wiki.batocera.org/emulators:windows32_windows64
+    For more info: https://wiki.batocera.org/systems:windows
   comment_fr: |
-    Trouvez la documentation ici: https://wiki.batocera.org/emulators:windows32_windows64
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:windows
 
 windows_installers:
   name:       Install a new Windows game
@@ -1670,6 +1772,10 @@ windows_installers:
     wine:
       lutris:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
       proton:  { requireAnyOf: [BR2_PACKAGE_WINE_PROTON] }
+  comment_en: |
+    For more info: https://wiki.batocera.org/systems:windows
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:windows
 
 xash3d_fwgs:
   name:       Xash3D-FWGS
@@ -1712,9 +1818,9 @@ wiiu:
     cemu:
       cemu:  { requireAnyOf: [BR2_PACKAGE_CEMU] }
   comment_en: |
-    Find the documentation here: https://wiki.batocera.org/emulators:wiiu
+    For more info: https://wiki.batocera.org/systems:wiiu
   comment_fr: |
-    Trouvez la documentation ici: https://wiki.batocera.org/emulators:wiiu
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:wiiu
 
 solarus:
   name:       Solarus
@@ -1817,6 +1923,10 @@ fpinball:
   emulators:
     fpinball:
       fpinball:  { requireAnyOf: [BR2_PACKAGE_FPINBALL] }
+  comment_en: |
+    For more info: https://wiki.batocera.org/systems:windows
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:windows
 
 flash:
   name:       Adobe Flash Player
@@ -1839,6 +1949,10 @@ xbox:
   emulators:
     xemu:
       xemu: { requireAnyOf: [BR2_PACKAGE_XEMU] }
+  comment_en: |
+    For more info: https://wiki.batocera.org/systems:xbox
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:xbox
 
 flatpak:
   name: Applications
@@ -1880,20 +1994,19 @@ supervision:
   manufacturer: Watara
   release: 1992
   hardware: portable
-  extensions: [sv, zip, 7zip]
+  extensions: [sv, zip, 7z]
   emulators:
     libretro:
       potator: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_WATARA] }
 
 ecwolf:
   name:       ECWolf
-  manufacturer: Blzut3
+  manufacturer: Ports
   release: 2013
   hardware: port
-  extensions: [ecwolf, pk3, zip, 7zip]
+  extensions: [ecwolf, pk3]
+  group: ports
   emulators:
-    libretro:
-      ecwolf: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_ECWOLF], incompatible_extensions: [ecwolf] }
     ecwolf:
       ecwolf: { requireAnyOf: [BR2_PACKAGE_ECWOLF] }
 
@@ -1921,3 +2034,32 @@ model2:
     model2emu:
       model2emu: { requireAnyOf: [BR2_PACKAGE_MODEL2EMU] }
 
+scv:
+  name:       Super Cassette Vision
+  manufacturer: Epoch Co
+  release: 1984
+  hardware: console
+  extensions: [bin, "0"]
+  emulators:
+    libretro:
+      emuscv: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_EMUSCV] }
+
+apple2gs:
+  name:      Apple IIGS
+  manufacturer: Apple
+  release: 1986
+  hardware: computer
+  extensions: [2mg, do, nib, po, dsk]
+  emulators:
+    gsplus:
+      gsplus: { requireAnyOf: [BR2_PACKAGE_GSPLUS] }
+
+uzebox:
+  name:       Uzebox
+  manufacturer: Atmel
+  release: 2008
+  hardware: console
+  extensions: [uze]
+  emulators:
+    libretro:
+      uzem: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_UZEM] }

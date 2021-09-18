@@ -4,11 +4,13 @@
 #
 ################################################################################
 
-AUTOMAKE_VERSION = 1.15.1
+# batocera : 1.16 required for libbluray
+AUTOMAKE_VERSION = 1.16
 AUTOMAKE_SOURCE = automake-$(AUTOMAKE_VERSION).tar.xz
 AUTOMAKE_SITE = $(BR2_GNU_MIRROR)/automake
 AUTOMAKE_LICENSE = GPL-2.0+
 AUTOMAKE_LICENSE_FILES = COPYING
+AUTOMAKE_CPE_ID_VENDOR = gnu
 
 HOST_AUTOMAKE_DEPENDENCIES = host-autoconf
 
@@ -32,4 +34,6 @@ $(eval $(host-autotools-package))
 # variables used by other packages
 AUTOMAKE = $(HOST_DIR)/bin/automake
 ACLOCAL_DIR = $(STAGING_DIR)/usr/share/aclocal
-ACLOCAL = $(HOST_DIR)/bin/aclocal -I $(ACLOCAL_DIR)
+ACLOCAL = $(HOST_DIR)/bin/aclocal
+ACLOCAL_PATH = $(ACLOCAL_DIR):$(ACLOCAL_HOST_DIR)
+export ACLOCAL_PATH

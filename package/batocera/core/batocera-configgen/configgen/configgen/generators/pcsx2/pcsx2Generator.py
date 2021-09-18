@@ -9,6 +9,10 @@ import re
 import configparser
 import io
 import controllersConfig
+from utils.logger import get_logger
+import psutil
+
+eslog = get_logger(__name__)
 
 class Pcsx2Generator(Generator):
 
@@ -36,7 +40,7 @@ class Pcsx2Generator(Generator):
 
         # Fullboot
         if system.isOptSet('fullboot') and system.config['fullboot'] == '0':
-            print("Fast Boot and skip BIOS")
+            eslog.debug("Fast Boot and skip BIOS")
         else:
             commandArray.append("--fullboot")
 
@@ -60,6 +64,9 @@ class Pcsx2Generator(Generator):
         if arch == "x86":
             env["LD_LIBRARY_PATH"]    = "/lib32"
             env["LIBGL_DRIVERS_PATH"] = "/lib32/dri"
+            # hum pw 0.2 and 0.3 are hardcoded, not nice
+            env["SPA_PLUGIN_DIR"]      = "/usr/lib/spa-0.2:/lib32/spa-0.2"
+            env["PIPEWIRE_MODULE_DIR"] = "/usr/lib/pipewire-0.3:/lib32/pipewire-0.3"
 
         return Command.Command(array=commandArray, env=env)
 
@@ -126,6 +133,25 @@ def configureVM(config_directory, system):
     else:
         pcsx2VMConfig.set("EmuCore/GS","VsyncEnable", "1")    
 
+    if not pcsx2VMConfig.has_section("EmuCore/Speedhacks"):
+        pcsx2VMConfig.add_section("EmuCore/Speedhacks")
+    # Any speed hacks set explicitly or as defaults are considered safe by the PCSX2 devs
+    # These hacks are also gentle on lower end systems with the exception of MTVU where we check system requirements
+    pcsx2VMConfig.set("EmuCore/Speedhacks", "IntcStat", "enabled")
+    pcsx2VMConfig.set("EmuCore/Speedhacks", "WaitLoop", "enabled")
+    micro_vu_keys = {"vuFlagHack", "vuThread", "vu1Instant"}
+    micro_vu_default_keys = {"vuFlagHack"}
+    # MTVU + Instant VU1 is not supported by PCSX2; and so its one or the other
+    if psutil.cpu_count(logical=False) >= 3:  # 3+ physical cores recommended by PCSX2 devs for MTVU
+        micro_vu_default_keys.add("vuThread")
+    else:
+        micro_vu_default_keys.add("vu1Instant")
+    micro_vu_enabled_keys = \
+        set(system.config["micro_vu"].split(",")) if system.isOptSet("micro_vu") else micro_vu_default_keys
+    for key in micro_vu_enabled_keys:
+        pcsx2VMConfig.set("EmuCore/Speedhacks", key, "enabled")
+    for key in micro_vu_keys - micro_vu_enabled_keys:
+        pcsx2VMConfig.set("EmuCore/Speedhacks", key, "disabled")
 
     ## [EMUCORE]
     if not pcsx2VMConfig.has_section("EmuCore"):
@@ -341,8 +367,4 @@ def checkAvx2():
     return False
 
 def checkSseLib(isAVX2):
-    if not isAVX2:
-        for line in open("/proc/cpuinfo").readlines():
-            if re.match("^flags[\t ]*:.* sse4_1", line) and re.match("^flags[\t ]*:.* sse4_2", line):
-                return "libGSdx-SSE4.so"
     return "libGSdx.so"

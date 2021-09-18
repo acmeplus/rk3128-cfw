@@ -4,29 +4,15 @@
 #
 ################################################################################
 
-ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER_V_1_19),y)
-XSERVER_XORG_SERVER_VERSION = eca4d098cedac245f89110920cf99c3a920a9eff
-XSERVER_XORG_SERVER_SITE = $(call github,rockchip-linux,xserver,$(XSERVER_XORG_SERVER_VERSION))
-else ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER_V_1_20),y)
-XSERVER_XORG_SERVER_VERSION = 1.20.4_2019_12_16
-XSERVER_XORG_SERVER_SITE = $(call github,JeffyCN,xorg-xserver,$(XSERVER_XORG_SERVER_VERSION))
-XSERVER_XORG_SERVER_PATCH_DIRS += $($(PKG)_PKGDIR)/1.20.4
-
-ifeq ($(BR2_PACKAGE_LINUX_RGA),y)
-XSERVER_XORG_SERVER_DEPENDENCIES += linux-rga
-endif
-
-else
-XSERVER_XORG_SERVER_VERSION = $(call qstrip,$(BR2_PACKAGE_XSERVER_XORG_SERVER_VERSION))
+XSERVER_XORG_SERVER_VERSION = 1.20.11
 XSERVER_XORG_SERVER_SOURCE = xorg-server-$(XSERVER_XORG_SERVER_VERSION).tar.bz2
 XSERVER_XORG_SERVER_SITE = https://xorg.freedesktop.org/archive/individual/xserver
-endif
 XSERVER_XORG_SERVER_LICENSE = MIT
 XSERVER_XORG_SERVER_LICENSE_FILES = COPYING
 XSERVER_XORG_SERVER_INSTALL_STAGING = YES
 # xfont_font-util is needed only for autoreconf
 XSERVER_XORG_SERVER_AUTORECONF = YES
-XSERVER_XORG_SERVER_DEPENDENCIES += \
+XSERVER_XORG_SERVER_DEPENDENCIES = \
 	xfont_font-util \
 	xutil_util-macros \
 	xlib_libX11 \
@@ -34,6 +20,7 @@ XSERVER_XORG_SERVER_DEPENDENCIES += \
 	xlib_libXdmcp \
 	xlib_libXext \
 	xlib_libXfixes \
+	xlib_libXfont2 \
 	xlib_libXi \
 	xlib_libXrender \
 	xlib_libXres \
@@ -103,56 +90,21 @@ endif
 ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER_KDRIVE),y)
 XSERVER_XORG_SERVER_CONF_OPTS += \
 	--enable-kdrive \
-	--enable-xfbdev \
 	--disable-glx \
-	--disable-dri \
-	--disable-xsdl
-define XSERVER_CREATE_X_SYMLINK
-	ln -f -s Xfbdev $(TARGET_DIR)/usr/bin/X
-endef
-XSERVER_XORG_SERVER_POST_INSTALL_TARGET_HOOKS += XSERVER_CREATE_X_SYMLINK
-
-ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER_KDRIVE_EVDEV),y)
-XSERVER_XORG_SERVER_CONF_OPTS += --enable-kdrive-evdev
-else
-XSERVER_XORG_SERVER_CONF_OPTS += --disable-kdrive-evdev
-endif
-
-ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER_KDRIVE_KBD),y)
-XSERVER_XORG_SERVER_CONF_OPTS += --enable-kdrive-kbd
-else
-XSERVER_XORG_SERVER_CONF_OPTS += --disable-kdrive-kbd
-endif
-
-ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER_KDRIVE_MOUSE),y)
-XSERVER_XORG_SERVER_CONF_OPTS += --enable-kdrive-mouse
-else
-XSERVER_XORG_SERVER_CONF_OPTS += --disable-kdrive-mouse
-endif
+	--disable-dri
 
 else # modular
-XSERVER_XORG_SERVER_CONF_OPTS += --disable-kdrive --disable-xfbdev
+XSERVER_XORG_SERVER_CONF_OPTS += --disable-kdrive
 endif
 
-ifeq ($(BR2_PACKAGE_MESA3D_DRI_DRIVER),y)
+ifeq ($(BR2_PACKAGE_HAS_LIBGL),y)
 XSERVER_XORG_SERVER_CONF_OPTS += --enable-dri --enable-glx
-XSERVER_XORG_SERVER_DEPENDENCIES += mesa3d
+XSERVER_XORG_SERVER_DEPENDENCIES += libgl
 else
 XSERVER_XORG_SERVER_CONF_OPTS += --disable-dri --disable-glx
 endif
 
-ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER_AIGLX),y)
-XSERVER_XORG_SERVER_CONF_OPTS += --enable-aiglx
-else
-XSERVER_XORG_SERVER_CONF_OPTS += --disable-aiglx
-endif
-
 # Optional packages
-ifeq ($(BR2_PACKAGE_TSLIB),y)
-XSERVER_XORG_SERVER_DEPENDENCIES += tslib
-XSERVER_XORG_SERVER_CONF_OPTS += --enable-tslib LDFLAGS="-lts"
-endif
-
 ifeq ($(BR2_PACKAGE_HAS_UDEV),y)
 XSERVER_XORG_SERVER_DEPENDENCIES += udev
 XSERVER_XORG_SERVER_CONF_OPTS += --enable-config-udev
@@ -178,14 +130,6 @@ XSERVER_XORG_SERVER_DEPENDENCIES += libunwind
 XSERVER_XORG_SERVER_CONF_OPTS += --enable-libunwind
 else
 XSERVER_XORG_SERVER_CONF_OPTS += --disable-libunwind
-endif
-
-ifeq ($(BR2_PACKAGE_XLIB_LIBXFONT2),y)
-XSERVER_XORG_SERVER_DEPENDENCIES += xlib_libXfont2
-endif
-
-ifeq ($(BR2_PACKAGE_XLIB_LIBXFONT),y)
-XSERVER_XORG_SERVER_DEPENDENCIES += xlib_libXfont
 endif
 
 ifneq ($(BR2_PACKAGE_XLIB_LIBXVMC),y)
@@ -238,12 +182,17 @@ XSERVER_XORG_SERVER_CONF_OPTS += --with-sha1=libsha1
 XSERVER_XORG_SERVER_DEPENDENCIES += libsha1
 endif
 
+define XSERVER_XORG_SERVER_INSTALL_INIT_SYSTEMD
+	$(INSTALL) -D -m 0644 package/x11r7/xserver_xorg-server/xorg.service \
+		$(TARGET_DIR)/usr/lib/systemd/system/xorg.service
+endef
+
+# init script conflicts with S90nodm
+ifneq ($(BR2_PACKAGE_NODM),y)
 define XSERVER_XORG_SERVER_INSTALL_INIT_SYSV
 	$(INSTALL) -D -m 755 package/x11r7/xserver_xorg-server/S40xorg \
 		$(TARGET_DIR)/etc/init.d/S40xorg
-
-	$(INSTALL) -D -m 755 package/x11r7/xserver_xorg-server/20-modesetting.conf \
-		$(TARGET_DIR)/usr/share/X11/xorg.conf.d
 endef
+endif
 
 $(eval $(autotools-package))

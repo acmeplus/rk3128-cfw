@@ -4,12 +4,14 @@ from generators.Generator import Generator
 import Command
 import os
 import batoceraFiles
-from utils.logger import eslog
+from utils.logger import get_logger
 import subprocess
 import sys
 import shutil
 import stat
 import configparser
+
+eslog = get_logger(__name__)
 
 class Model2EmuGenerator(Generator):
 
@@ -31,12 +33,12 @@ class Model2EmuGenerator(Generator):
             env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/lutris/lib/wine", "WINEPREFIX": wineprefix }
             env.update(os.environ)
             env["PATH"] = "/usr/wine/lutris/bin:/bin:/usr/bin"
-            eslog.log("command: {}".format(str(cmd)))
+            eslog.debug("command: {}".format(str(cmd)))
             proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = proc.communicate()
             exitcode = proc.returncode
-            eslog.log(out.decode())
-            eslog.log(err.decode())
+            eslog.debug(out.decode())
+            eslog.error(err.decode())
             with open(wineprefix + "/d3dcompiler_42.done", "w") as f:
                 f.write("done")
 
@@ -45,12 +47,12 @@ class Model2EmuGenerator(Generator):
             env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/lutris/lib/wine", "WINEPREFIX": wineprefix }
             env.update(os.environ)
             env["PATH"] = "/usr/wine/lutris/bin:/bin:/usr/bin"
-            eslog.log("command: {}".format(str(cmd)))
+            eslog.debug("command: {}".format(str(cmd)))
             proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = proc.communicate()
             exitcode = proc.returncode
-            eslog.log(out.decode())
-            eslog.log(err.decode())
+            eslog.debug(out.decode())
+            eslog.error(err.decode())
             with open(wineprefix + "/d3dx9_42.done", "w") as f:
                 f.write("done")
 
@@ -59,12 +61,12 @@ class Model2EmuGenerator(Generator):
             env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/lutris/lib/wine", "WINEPREFIX": wineprefix }
             env.update(os.environ)
             env["PATH"] = "/usr/wine/lutris/bin:/bin:/usr/bin"
-            eslog.log("command: {}".format(str(cmd)))
+            eslog.debug("command: {}".format(str(cmd)))
             proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = proc.communicate()
             exitcode = proc.returncode
-            eslog.log(out.decode())
-            eslog.log(err.decode())
+            eslog.debug(out.decode())
+            eslog.error(err.decode())
             with open(wineprefix + "/d3dcompiler_43.done", "w") as f:
                 f.write("done")
 
@@ -73,12 +75,12 @@ class Model2EmuGenerator(Generator):
             env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/lutris/lib/wine", "WINEPREFIX": wineprefix }
             env.update(os.environ)
             env["PATH"] = "/usr/wine/lutris/bin:/bin:/usr/bin"
-            eslog.log("command: {}".format(str(cmd)))
+            eslog.debug("command: {}".format(str(cmd)))
             proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = proc.communicate()
             exitcode = proc.returncode
-            eslog.log(out.decode())
-            eslog.log(err.decode())
+            eslog.debug(out.decode())
+            eslog.error(err.decode())
             with open(wineprefix + "/d3dx9_43.done", "w") as f:
                 f.write("done")
     
@@ -87,12 +89,12 @@ class Model2EmuGenerator(Generator):
             env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/lutris/lib/wine", "WINEPREFIX": wineprefix }
             env.update(os.environ)
             env["PATH"] = "/usr/wine/lutris/bin:/bin:/usr/bin"
-            eslog.log("command: {}".format(str(cmd)))
+            eslog.debug("command: {}".format(str(cmd)))
             proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = proc.communicate()
             exitcode = proc.returncode
-            eslog.log(out.decode())
-            eslog.log(err.decode())
+            eslog.debug(out.decode())
+            eslog.error(err.decode())
             with open(wineprefix + "/d3dx9.done", "w") as f:
                 f.write("done")
 
@@ -101,12 +103,12 @@ class Model2EmuGenerator(Generator):
             env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/lutris/lib/wine", "WINEPREFIX": wineprefix }
             env.update(os.environ)
             env["PATH"] = "/usr/wine/lutris/bin:/bin:/usr/bin"
-            eslog.log("command: {}".format(str(cmd)))
+            eslog.debug("command: {}".format(str(cmd)))
             proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = proc.communicate()
             exitcode = proc.returncode
-            eslog.log(out.decode())
-            eslog.log(err.decode())
+            eslog.debug(out.decode())
+            eslog.error(err.decode())
             with open(wineprefix + "/xact.done", "w") as f:
                 f.write("done")
 
@@ -115,12 +117,12 @@ class Model2EmuGenerator(Generator):
             env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/lutris/lib/wine", "WINEPREFIX": wineprefix }
             env.update(os.environ)
             env["PATH"] = "/usr/wine/lutris/bin:/bin:/usr/bin"
-            eslog.log("command: {}".format(str(cmd)))
+            eslog.debug("command: {}".format(str(cmd)))
             proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = proc.communicate()
             exitcode = proc.returncode
-            eslog.log(out.decode())
-            eslog.log(err.decode())
+            eslog.debug(out.decode())
+            eslog.error(err.decode())
             with open(wineprefix + "/xact_x64.done", "w") as f:
                 f.write("done")
         
@@ -144,12 +146,49 @@ class Model2EmuGenerator(Generator):
         # now set the emulator features
         if system.isOptSet("screenRatio"):
             Config.set("Renderer","WideScreenWindow", format(system.config["screenRatio"]))
-
+        else:
+            Config.set("Renderer","WideScreenWindow", "0")
+        if system.isOptSet("fakeGouraud"):
+            Config.set("Renderer","FakeGouraud", format(system.config["fakeGouraud"]))
+        else:
+            Config.set("Renderer","FakeGouraud", "0")
+        if system.isOptSet("bilinearFiltering"):
+            Config.set("Renderer","Bilinear", format(system.config["bilinearFiltering"]))
+        else:
+            Config.set("Renderer","Bilinear", "1")
+        if system.isOptSet("trilinearFiltering"):
+            Config.set("Renderer","Trilinear", format(system.config["trilinearFiltering"]))
+        else:
+            Config.set("Renderer","Trilinear", "0")
+        if system.isOptSet("filterTilemaps"):
+            Config.set("Renderer","FilterTilemaps", format(system.config["filterTilemaps"]))
+        else:
+            Config.set("Renderer","FilterTilemaps", "0")
+        if system.isOptSet("forceManaged"):
+            Config.set("Renderer","ForceManaged", format(system.config["forceManaged"]))
+        else:
+            Config.set("Renderer","ForceManaged", "0")
+        if system.isOptSet("enableMIP"):
+            Config.set("Renderer","AutoMip", format(system.config["enableMIP"]))
+        else:
+            Config.set("Renderer","AutoMip", "0")
+        if system.isOptSet("meshTransparency"):
+            Config.set("Renderer","MeshTransparency", format(system.config["meshTransparency"]))
+        else:
+            Config.set("Renderer","MeshTransparency", "0")
+        if system.isOptSet("fullscreenAA"):
+            Config.set("Renderer","FSAA", format(system.config["fullscreenAA"]))
+        else:
+            Config.set("Renderer","FSAA", "0")
+        if system.isOptSet("useRawInput"):
+            Config.set("Input","UseRawInput", format(system.config["useRawInput"]))
+        else:
+            Config.set("Input","UseRawInput", "0")
+        
         with open(configFileName, 'w') as configfile:
             Config.write(configfile)
         
         # now run the emulator
-        #commandArray = ["/usr/wine/lutris/bin/wine", "/userdata/saves/model2/model2emu/emulator_multicpu.exe"]
         commandArray = ["/usr/wine/lutris/bin/wine", "explorer", "/desktop=Wine,{}x{}".format(gameResolution["width"], gameResolution["height"]), "/userdata/saves/model2/model2emu/emulator_multicpu.exe"]
         # simplify the rom name (strip the directory & extension)
         romname = rom.replace("/userdata/roms/model2/", "")
@@ -161,5 +200,8 @@ class Model2EmuGenerator(Generator):
             env={
                 "WINEPREFIX": wineprefix,
                 "LD_LIBRARY_PATH": "/lib32:/usr/wine/lutris/lib/wine",
-                "LIBGL_DRIVERS_PATH": "/lib32/dri"
+                "LIBGL_DRIVERS_PATH": "/lib32/dri",
+                # hum pw 0.2 and 0.3 are hardcoded, not nice
+                "SPA_PLUGIN_DIR": "/usr/lib/spa-0.2:/lib32/spa-0.2",
+                "PIPEWIRE_MODULE_DIR": "/usr/lib/pipewire-0.3:/lib32/pipewire-0.3"
             })

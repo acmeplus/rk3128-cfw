@@ -11,7 +11,6 @@ if BR2_PACKAGE_OPENSSL
 
 choice
 	prompt "ssl library"
-	default BR2_PACKAGE_LIBOPENSSL
 	help
 	  Select OpenSSL or LibreSSL.
 
@@ -45,6 +44,9 @@ config BR2_PACKAGE_LIBRESSL
 	  http://www.libressl.org/
 
 source "package/libressl/Config.in"
+
+# openssl from br2-external trees, if any
+source "$BR2_BASE_DIR/.br2-external.in.openssl"
 
 endchoice
 

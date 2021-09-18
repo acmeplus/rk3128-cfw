@@ -1,6 +1,0 @@
-config BR2_PACKAGE_SOURCE_HAN_SANS_JP
-	bool "Source Han Sans JP"
-	help
-	  Adobe OpenType Pan-CJK font family for Japanese.
-
-	  https://github.com/adobe-fonts/source-han-sans

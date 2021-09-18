@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -x
-
 SYSTEM=$1
 ACTION=$2
 shift
@@ -47,6 +45,9 @@ export GST_PLUGIN_SYSTEM_PATH_1_0="/usr/lib/gstreamer-1.0:/lib32/gstreamer-1.0"
 export GST_REGISTRY_1_0="/userdata/system/.cache/gstreamer-1.0/registry.x86_64.bin"
 export LIBGL_DRIVERS_PATH="/lib32/dri:/usr/lib/dri"
 export WINEDLLPATH="${DIR}/${WINE_VERSION}/lib/wine/fakedlls:${DIR}/${WINE_VERSION}/lib64/wine/fakedlls"
+# hum pw 0.2 and 0.3 are hardcoded, not nice
+export SPA_PLUGIN_DIR="/usr/lib/spa-0.2:/lib32/spa-0.2"
+export PIPEWIRE_MODULE_DIR="/usr/lib/pipewire-0.3:/lib32/pipewire-0.3"
 
 usage() {
     echo "${1} windows play    	     <game>.iso"             >&2
@@ -76,6 +77,11 @@ wine_options() {
     FSYNC="$(get_setting fsync "${SYSTEM}" "${ROMGAMENAME}")"
     PBA="$(get_setting pba "${SYSTEM}" "${ROMGAMENAME}")"
     FPS_LIMIT="$(get_setting fps_limit "${SYSTEM}" "${ROMGAMENAME}")"
+    ALLOW_XIM="$(get_setting allow_xim "${SYSTEM}" "${ROMGAMENAME}")"
+    NO_WRITE_WATCH="$(get_setting no_write_watch "${SYSTEM}" "${ROMGAMENAME}")"
+    FORCE_LARGE_ADRESS="$(get_setting force_large_adress "${SYSTEM}" "${ROMGAMENAME}")"
+    HEAP_DELAY_FREE="$(get_setting heap_delay_free "${SYSTEM}" "${ROMGAMENAME}")"
+    HIDE_NVIDIA_GPU="$(get_setting hide_nvidia_gpu "${SYSTEM}" "${ROMGAMENAME}")"
     WINE_DEBUG="$(get_setting wine_debug "${SYSTEM}" "${ROMGAMENAME}")"
     KEYBOARD="$(/usr/bin/batocera-settings-get system.kblayout)"
     VIRTUAL_DESKTOP="$(get_setting virtual_desktop "${SYSTEM}" "${ROMGAMENAME}")"
@@ -108,6 +114,26 @@ wine_options() {
 
     export VKD3D_SHADER_DEBUG=none
     test "${WINE_DEBUG}" = 1 && unset VKD3D_SHADER_DEBUG
+
+    # Wine-mono override for FNA games
+    export WINE_MONO_OVERRIDES="Microsoft.Xna.Framework.*,Gac=n"
+
+    # Disable XIM support until libx11 >= 1.7 is widespread
+    export WINE_ALLOW_XIM=0
+    test "${ALLOW_XIM}" = 1 && WINE_ALLOW_XIM=1
+
+    # Advanced options from proton
+    export WINE_DISABLE_WRITE_WATCH=0
+    test "${NO_WRITE_WATCH}" = 1 && WINE_DISABLE_WRITE_WATCH=1
+
+    export WINE_LARGE_ADDRESS_AWARE=0
+    test "${FORCE_LARGE_ADRESS}" = 1 && WINE_LARGE_ADDRESS_AWARE=1
+
+    export WINE_HEAP_DELAY_FREE=0
+    test "${HEAP_DELAY_FREE}" = 1 && WINE_HEAP_DELAY_FREE=1
+
+    export WINE_HIDE_NVIDIA_GPU=0
+    test "${HIDE_NVIDIA_GPU}" = 1 && WINE_HIDE_NVIDIA_GPU=1
 
     export STAGING_SHARED_MEMORY=1
     export ULIMIT_SIZE=1048576
@@ -307,37 +333,15 @@ sandboxing_prefix() {
     fi
 
     echo "Remove Symblink"
-    if [ -L "${WINEPREFIX}/drive_c/users/${USERNAME}/Downloads" ]; then
-    unlink "${WINEPREFIX}/drive_c/users/${USERNAME}/Downloads" || return 1
+    # replace some links by folders. 
+    # don't create all folders in case links doesn't exist to not create both Music and My Music at the same time (old wine uses My Music, new wine uses Musics)
+    for DIR in "Downloads" "Documents" "My Documents" "Music" "My Music" "Pictures" "My Pictures" "Videos" "My Videos" "Templates"
+    do
+    if test -L "${WINEPREFIX}/drive_c/users/${USERNAME}/${DIR}"; then
+        unlink "${WINEPREFIX}/drive_c/users/${USERNAME}/${DIR}" || return 1
+        mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/${DIR}" || return 1
     fi
-
-    if [ -L "${WINEPREFIX}/drive_c/users/${USERNAME}/My Documents" ]; then
-    unlink "${WINEPREFIX}/drive_c/users/${USERNAME}/My Documents" || return 1
-    fi
-
-    if [ -L "${WINEPREFIX}/drive_c/users/${USERNAME}/My Music" ]; then
-    unlink "${WINEPREFIX}/drive_c/users/${USERNAME}/My Music" || return 1
-    fi
-
-    if [ -L "${WINEPREFIX}/drive_c/users/${USERNAME}/My Pictures" ]; then
-    unlink "${WINEPREFIX}/drive_c/users/${USERNAME}/My Pictures" || return 1
-    fi
-
-    if [ -L "${WINEPREFIX}/drive_c/users/${USERNAME}/My Videos" ]; then
-    unlink "${WINEPREFIX}/drive_c/users/${USERNAME}/My Videos" || return 1
-    fi
-
-    if [ -L "${WINEPREFIX}/drive_c/users/${USERNAME}/Templates" ]; then
-    unlink "${WINEPREFIX}/drive_c/users/${USERNAME}/Templates" || return 1
-    fi
-
-    echo "Create user directory"
-    mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/Downloads" || return 1
-    mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/My Documents" || return 1
-    mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/My Music" || return 1
-    mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/My Pictures" || return 1
-    mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/My Videos" || return 1
-    mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/Templates" || return 1
+    done
 
     return 0
 }
@@ -562,9 +566,23 @@ init_cmd() {
     ) > "${WINEPOINT}/autorun.cmd"
 }
 
-install_exe() {
+basename_no_dup() {
     GAMENAME=$1
     BASEGAMENAME=$(basename "${GAMENAME}")
+    CANDIDATE=$(echo "${G_ROMS_DIR}/${BASEGAMENAME}" | sed -e s+"\.exe$"++)".wine"
+    i=0
+    while [ -d "${CANDIDATE}" ]; do
+        i=$((i+1))
+        BASEGAMENAME=$(basename "${GAMENAME}")"_${i}"
+        # Keep the extension, easier to troubleshoot when you have multiple setup.exe
+        CANDIDATE=$(echo "${G_ROMS_DIR}/${BASEGAMENAME}")".wine"
+    done
+    echo "${BASEGAMENAME}"
+}
+
+install_exe() {
+    GAMENAME=$1
+    BASEGAMENAME=$(basename_no_dup "${GAMENAME}")
     GAMEDIR=$(dirname "${GAMENAME}")
     WINEPOINT=$(echo "${G_ROMS_DIR}/${BASEGAMENAME}" | sed -e s+"\.exe$"++)".wine"
     INSTALLERFILE="${BASEGAMENAME}"
@@ -578,7 +596,7 @@ install_exe() {
 
 install_msi() {
     GAMENAME=$1
-    BASEGAMENAME=$(basename "${GAMENAME}")
+    BASEGAMENAME=$(basename_no_dup "${GAMENAME}")
     GAMEDIR=$(dirname "${GAMENAME}")
     WINEPOINT=$(echo "${G_ROMS_DIR}/${BASEGAMENAME}" | sed -e s+"\.msi$"++)".wine"
     INSTALLERFILE="${BASEGAMENAME}"
@@ -592,7 +610,7 @@ install_msi() {
 
 install_iso() {
     GAMENAME=$1
-    BASEGAMENAME=$(basename "${GAMENAME}")
+    BASEGAMENAME=$(basename_no_dup "${GAMENAME}")
     GAMEISOMOUNT="/var/run/wine/${BASEGAMENAME}.cdrom"
     INSTALLERISO="${GAMENAME}"
 

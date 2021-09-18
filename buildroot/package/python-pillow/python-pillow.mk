@@ -4,11 +4,13 @@
 #
 ################################################################################
 
-PYTHON_PILLOW_VERSION = 4.2.1
+PYTHON_PILLOW_VERSION = 6.2.1
 PYTHON_PILLOW_SOURCE = Pillow-$(PYTHON_PILLOW_VERSION).tar.gz
-PYTHON_PILLOW_SITE = https://pypi.python.org/packages/55/aa/f7f983fb72710a9daa4b3374b7c160091d3f94f5c09221f9336ade9027f3
+PYTHON_PILLOW_SITE = https://files.pythonhosted.org/packages/5b/bb/cdc8086db1f15d0664dd22a62c69613cdc00f1dd430b5b19df1bea83f2a3
 PYTHON_PILLOW_LICENSE = PIL Software License
 PYTHON_PILLOW_LICENSE_FILES = LICENSE
+PYTHON_PILLOW_CPE_ID_VENDOR = python
+PYTHON_PILLOW_CPE_ID_PRODUCT = pillow
 PYTHON_PILLOW_SETUP_TYPE = setuptools
 PYTHON_PILLOW_BUILD_OPTS = --disable-platform-guessing
 
